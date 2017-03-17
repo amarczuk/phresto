@@ -180,7 +180,7 @@ class View {
 		return $text;
 	}
     
-    function getFlush() {
+    public function getFlush() {
 		
         if ( !$this->flushed ) {
             

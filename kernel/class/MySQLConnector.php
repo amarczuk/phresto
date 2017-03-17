@@ -41,7 +41,7 @@ class MySQLConnector extends DBConnector
             foreach ( $var as $key => $val ) {
                 $var[$key] = $this->escape( $val );
             }
-            return '(' . implode( ', ', array_values( $val ) ) . ')';
+            return '(' . implode( ', ', array_values( $var ) ) . ')';
         }
 
         if ( is_bool( $var ) ) {
