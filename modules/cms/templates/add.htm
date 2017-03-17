@@ -1,0 +1,20 @@
+		<h3>Add new article</h3>
+		<form class='mixedform' method="post" action="/cms/add/{? $caturl ?}" onsubmit="$('#cmsArtContentValue').val( $('#cmsArtContent').html() );">
+			<div class='row full'>
+				<div class='small-12 medium-5 columns'>
+					<input type='text' class='tiny radius' placeholder='{? LAN_CMS_URL ?}' name='url' required>
+				</div>
+				<div class='small-12 medium-6 columns'>
+					<input type='text' class='tiny radius' placeholder='{? LAN_CMS_TITLE ?}' name='title' required>
+				</div>
+				<div class='small-12 medium-1 columns switch radius'>
+					<input id="artStatusCheckboxSwitch" name='staus' type="checkbox" value='1' >
+	                <label for="artStatusCheckboxSwitch"></label>
+				</div>
+				<input type='hidden' name='content' value="" id="cmsArtContentValue">
+			</div>
+			<div class='row full'>
+				<div class='small-12' id='cmsArtContent' contenteditable>content</div>
+			</div>
+			<button type='submit' class='button'></button>
+		</form>

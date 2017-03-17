@@ -1,0 +1,1 @@
+<?phpdefine( 'LAN_FILES_H1', 'Files in the project' );define( 'LAN_ADD_FILE_H1', 'Add file' );

@@ -1,0 +1,38 @@
+<div id="pop_add_file" class="reveal-modal small" data-reveal>      
+        <a class="close-reveal-modal">&#215;</a>                                                    
+        <div class="row headrow">
+            <h1>{? LAN_ADD_FILE_H1 ?}</h1>
+        </div>
+        
+        <div class='row collapse'>                     
+            <div class="small-8 columns">
+              <input type="text" placeholder="File Name" class='tiny' id='newName' />
+            </div>
+            <div class="small-4 columns">
+              <select class='tiny' id='newMode'>                                      
+                  <option value="php">.php</option>
+                  <option value="javascript">.js</option>
+                  <option value="html">.html</option>
+                  <option value="css">.css</option>
+                  <option value="perl">.pl</option>
+                  <option value="pm">.pm</option>
+                  <option value="python">.py</option>
+                  <option value="json">.json</option>
+                  <option value="txt">.txt</option>
+                  <option value="xml">.xml</option>
+                  <option value="csv">.csv</option>
+                </select>
+            </div>  
+        </div>
+        
+        <div class='row'>
+            <div class="small-12 columns">
+              <ul class="button-group tiny right">
+                <li><a class="button tiny" id="addFileSubmit">Add</a></li>
+                <li><a class="button tiny" id="addAndOpenFileSubmit">Add & open</a></li>
+                <li><a class="button alert tiny" id="closeFileSubmit">Close</a></li>
+              </ul>
+            </div>
+        </div>
+        
+    </div>

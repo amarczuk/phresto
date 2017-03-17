@@ -1,0 +1,14 @@
+{? $doctype ?}
+<head>
+<title>PHPfy run {? $filename ?}</title>
+{? repeat($scripts) ?}<script type="text/javascript" src="{? $scripts[url] ?}"></script>
+{? /repeat ?}
+</head>
+<body>                      
+
+<script type='text/javascript'>
+{? $code ?}
+</script>
+
+</body>
+</html>

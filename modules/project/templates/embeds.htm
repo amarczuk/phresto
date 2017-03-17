@@ -1,0 +1,39 @@
+
+		{? repeat($codes) ?}
+		<div class='small-12 columns embedItem'>
+			<p><b>{? $codes[name] ?}</b>
+			({? $codes[views] ?} views)
+			{? if($is_editable=1) ?}
+			<a data-tooltip title="edit" data-id='{? $codes[id] ?}' data-target='embedEditList' href='/?mod=project&pg=editEmbed&id={? $id ?}&eid={? $codes[id] ?}'class='ajaxbutton embedbutton'><i class='fi-pencil'></i></a>
+			<a class='ajaxbutton embedbutton' data-target='embedEditList' href='/?mod=project&pg=delEmbed&id={? $id ?}&eid={? $codes[id] ?}'><i class='fi-x'></i></a></p>
+			{? /if ?}
+		</div>
+		<div class='small-12 medium-2 columns'>
+			main file:
+		</div>
+		<div class='small-12 medium-10 columns'>
+			<b>{? $codes[main_code_name] ?}</b>
+		</div>
+		<div class='small-12 medium-2 columns'>
+			files:
+		</div>
+		<div class='small-12 medium-10 columns'>
+			<b>{? $codes[code_names] ?}</b>
+		</div>
+		<div class='small-12 medium-2 columns'>
+			code:
+		</div>
+		<div class='small-12 medium-10 columns bottom-pad'>
+				<code class="comsCode">&lt;div class="phpfyembd{? $codes[id] ?}">&lt;/div><br>&lt;script type='text/javascript' src='{? $url ?}/embed/{? $codes[id] ?}'>&lt;/script></code>
+		</div>
+		{? /repeat ?}
+
+		{? if($is_editable=1) ?}
+		<div class='small-12 columns text-center'>
+			<p><a data-target='embedEditList' href='/?mod=project&pg=editEmbed&id={? $id ?}'class='ajaxbutton button tiny'>add new</a></p>
+		</div>
+		{? /if ?}
+
+		<script>
+		phpfy.Code.highlightCode();
+		</script>

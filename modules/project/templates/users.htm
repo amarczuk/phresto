@@ -1,0 +1,7 @@
+	{? repeat($users) ?}
+        <div class='userLabel'>
+        <span  data-tooltip title="{? $users[nick] ?}" data-options="disable_for_touch:true"><img src='{? $users[pic] ?}' class='comment_pic' alt='{? $users[nick] ?}'></span>
+        <a class='button alert round tiny lesspadding ajaxbutton {? if($hideDelete=1) ?}hide{? /if ?}'
+        title="Remove" data-target='userEditList' href='/?mod=project&pg=delUser&id={? $id ?}&uid={? $users[id] ?}'><i class="fi-x"></i></a></div>
+    {? /repeat ?}
+    

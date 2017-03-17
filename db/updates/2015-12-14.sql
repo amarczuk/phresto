@@ -1,0 +1,1 @@
+ALTER TABLE `phpfy_project` ADD `noclone` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `public`;

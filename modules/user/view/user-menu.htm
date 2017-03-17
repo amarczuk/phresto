@@ -1,0 +1,9 @@
+        <ul class="no-bullet">
+        	<li><a href='/?mod=user&pg=logout' class='ajaxbutton red' data-target='_run'>Logout</a></li> 
+            <li{? if($open=info) ?} class='open'{? /if ?}><a href='/?mod=user' data-target='loginContent' data-drop='drop_login' class='ajaxbutton'>Info</a></li> 
+            <li{? if($open=edit) ?} class='open'{? /if ?}><a href='/?mod=user&pg=edit' data-target='loginContent' data-drop='drop_login' class='ajaxbutton'>Edit</a></li>
+            <li{? if($open=projects) ?} class='open'{? /if ?}><a href='/?mod=user&pg=projects'  data-target='loginContent' data-drop='drop_login' class='ajaxbutton'>Projects</a></li>
+            <!--li{? if($open=favs) ?} class='open'{? /if ?}><a href='/?mod=user&pg=favs'  data-target='loginContent' data-drop='drop_login' class='ajaxbutton'>Favourites</a></li>
+            <li{? if($open=notif) ?} class='open'{? /if ?}><a href='/?mod=user&pg=notif'  data-target='loginContent' data-drop='drop_login' class='ajaxbutton'>Notifications</a></li-->
+            <li{? if($open=delete) ?} class='open'{? /if ?}><a href='/?mod=user&pg=delete'  data-target='loginContent' data-drop='drop_login' class='ajaxbutton'>Remove</a></li>  
+        </ul>

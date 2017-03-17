@@ -1,0 +1,17 @@
+<div class='small-12 columns undertop'>
+    <div class='row'>
+        <div class='small-12 columns'>
+        	<h1>{? $title ?}</h1>
+        </div>
+    </div>
+</div>
+<div class='row'>
+    <div class='small-12 columns content' id='cmsArtContent'>
+		{? repeat($arts) ?}
+		<div class='small-12 medium-6 columns'>
+			<h5><a href='/cms/{? $arts[url] ?}' class='mixedlink' data-target='cmsContent'>{? $arts[title] ?}</a></h5>
+			<p>{? $arts[short] ?}</p>
+		</div>
+		{? /repeat ?}
+	</div>
+</div>

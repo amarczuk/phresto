@@ -1,0 +1,37 @@
+<div id="drop_project" data-dropdown-content class="f-dropdown content large ajaxdrop" aria-hidden="true" tabindex="-1" aria-autoclose="false">
+    <div class="headrow small-12 columns">                         
+        <h1 class='small-3 columns'>{? LAN_CODE_SANDBOX_H1 ?}</h1>
+        {? if($noclone=0) ?}
+        <a class="button tiny small-3 columns" href='/clone/{? $sandboxId?}' target='_blank'>Clone sandbox</a>
+        {? /if ?}
+        <a class="button tiny small-3 columns" href='/new' target='_blank'>New sandbox</a>
+        <a class="closeDrop" href="javascript:;">&#215;</a>  
+    </div>
+    <div class="row autoDropContent max" id="projectContent">
+
+    <div class='row'>
+     
+    </div>
+     
+    </div>
+    <div class="row bordercolapse dfoot">                         
+        <a class="small-2 columns button secondary tiny dropfoot ajaxbutton" data-target='projectContent' data-drop='drop_project' href='/?mod=project&id={? $projectId ?}'>
+            <i class="fi-page"></i>
+        </a>
+        <a class="small-2 columns button secondary tiny dropfoot tip-top ajaxbutton"  data-target='projectContent' data-drop='drop_project' href='/?mod=project&pg=comments&id={? $projectId ?}'> 
+            <i class="fi-comments"></i>
+        </a>
+        <a class="small-2 columns button secondary tiny dropfoot tip-top ajaxbutton" data-target='projectContent' data-drop='drop_project' href='/?mod=project&pg=share&id={? $projectId ?}'> 
+            <i class="fi-share"></i>
+        </a>
+        <a class="small-2 columns button secondary tiny dropfoot tip-top ajaxbutton editOnly"  data-target='projectContent' data-drop='drop_project' href='/?mod=project&pg=edit&id={? $projectId ?}'> 
+            <i class="fi-widget"></i>
+        </a>
+        <a class="small-2 columns button secondary tiny dropfoot tip-top ajaxbutton editOnly" data-target='projectContent' data-drop='drop_project' href='/?mod=project&pg=security&id={? $projectId ?}'> 
+            <i class="fi-shield"></i>
+        </a>
+        <a class="small-2 columns button secondary tiny dropfoot tip-top ajaxbutton editOnly" data-target='projectContent' data-drop='drop_project' href='/?mod=project&pg=delete&id={? $projectId ?}'> 
+            <i class="fi-trash"></i>
+        </a>
+    </div>
+</div>

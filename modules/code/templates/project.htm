@@ -1,0 +1,50 @@
+
+<form id='codes_form'>
+{? repeat($editor) ?}     
+    <textarea class="codepad_src" id="{? $editor[id] ?}" data-mode="{? $editor[mode] ?}" data-name="{? $editor[name] ?}" data-codeid="{? $editor[codeid] ?}">{? $editor[code] ?}</textarea>
+    <textarea class="hide" id="{? $editor[id] ?}_options" >{? $editor[options] ?}</textarea>
+{? /repeat ?} 
+    <input type="hidden" name='active' value='{? $activeEditors ?}' id='activeEditors'>
+    <input type="hidden" name='project' value='{? $projectId ?}' id='projectId'>   
+    <input type="hidden" name='editable' value='{? $editable ?}' id='isEditable'>   
+</form>
+<div class="off-canvas-wrap" data-offcanvas>
+  <div class="inner-wrap">
+    <div class='row'></div>
+    
+    <div class="sticky" id="topMenu"> 
+        
+      {? insert(project/topMiddle) ?}
+      {? insert(project/topMobile) ?}
+    
+    </div>
+
+    {? insert(project/mobileMenu) ?}
+
+    <div id='messageContainer'></div>
+    
+    {? insert(project/dropCms) ?}
+
+    {? insert(project/dropProject) ?}
+
+    {? insert(project/dropFile) ?}
+
+    {? insert(project/dropLogin) ?}
+
+    {? insert(project/dropDelFile) ?}
+    
+    {? insert(project/dropRun) ?}
+    
+    {? insert(project/popAdd) ?}
+                   
+    <div id="output_container" class="small-12 columns">
+        <div class='outputLabel'>Output</div>
+        <iframe name="outputFrame" id="outputFrame"></iframe>
+    </div>
+    
+    {? insert(showKey) ?}
+
+
+     <a class="exit-off-canvas"></a>
+  </div>
+</div>

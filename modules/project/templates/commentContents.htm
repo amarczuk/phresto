@@ -1,0 +1,29 @@
+{? repeat($comments) ?}
+    <div class="row comment withpadding">
+
+        <div class="small-6 columns">
+            <img src='{? $comments[upic] ?}' class='comment_pic'>
+            {? $comments[user] ?}
+        </div>
+        <div class="small-6 columns text-right">
+            {? $comments[fdate] ?}
+        </div>
+
+        <div class='small-12 columns comment_body'>
+            {? $comments[comment] ?}
+        </div>
+
+    </div>
+{? /repeat ?}
+
+<div id='commentPage{? $next ?}'>
+    <div class='text-center'>
+        <a href='/?mod=project&pg=showComments&pn={? $next ?}&id={? $id ?}'
+           class="button secondary tiny ajaxbutton {? $next_cls ?}"
+           data-target='commentPage{? $next ?}'>see more</a>
+    </div>
+</div>
+
+<script>
+phpfy.highlightCode();
+</script>

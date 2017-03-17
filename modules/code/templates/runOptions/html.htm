@@ -1,0 +1,58 @@
+
+<div class='row withpadding smallfont'>
+	<div class='small-6 columns'>
+		<h3>{? LAN_CODE_RUN_HTML_DC ?}</h3>
+		<select name='options[html]' id='run_html' class='runoption'>
+			{? repeat($htmls) ?}
+			<option value="{? $htmls[val] ?}"{? if($html={? $htmls[val] ?}) ?} selected{? /if ?}>{? $htmls[name] ?}</option>
+			{? /repeat ?}
+		</select>
+	</div>
+	<div class='small-6 columns'>
+		<h3>{? LAN_CODE_RUN_URL_QUERY ?}</h3>
+		<input type='text' class='runoption' name='options[query]' value='{? $query ?}' id='run_query'>
+</div>
+
+<div class='row withpadding smallfont'>
+	<div class='small-6 columns'>
+		<h3>{? LAN_CODE_RUN_JS_LIBS ?}</h3>
+		<select name='options[jquery]' id='run_jquery' class='runoption'>
+            {? repeat($jqueries) ?}
+            <option value="{? $jqueries[val] ?}"{? if($jquery={? $jqueries[val] ?}) ?} selected{? /if ?}>{? $jqueries[name] ?}</option>
+            {? /repeat ?}
+        </select>  
+        <br>
+        <select name='options[angular]' id='run_angular' class='runoption'>
+			{? repeat($angulars) ?}
+			<option value="{? $angulars[val] ?}"{? if($angular={? $angulars[val] ?}) ?} selected{? /if ?}>{? $angulars[name] ?}</option>
+			{? /repeat ?}
+		</select>
+	</div>
+	<div class='small-6 columns'>
+        <h3>{? LAN_CODE_RUN_CSS_FRMW ?}</h3>
+        <select name='options[bootstrap]' id='run_bootstrap' class='runoption'>
+            {? repeat($bootstraps) ?}
+            <option value="{? $bootstraps[val] ?}"{? if($jquery={? $bootstraps[val] ?}) ?} selected{? /if ?}>{? $bootstraps[name] ?}</option>
+            {? /repeat ?}
+        </select>  
+        <br>
+        <select name='options[foundation]' id='run_foundation' class='runoption'>
+			{? repeat($foundations) ?}
+			<option value="{? $foundations[val] ?}"{? if($angular={? $foundations[val] ?}) ?} selected{? /if ?}>{? $foundations[name] ?}</option>
+			{? /repeat ?}
+		</select>
+    </div>
+</div> 
+
+<div class='row withpadding smallfont'>
+    <div class='small-6 columns'>
+        <h3>{? LAN_CODE_RUN_CUST_CSS ?}</h3>
+        <p>{? LAN_CODE_RUN_CUST_CSS_DESC ?}</p>
+        <textarea id='run_css' name='options[css]' class='monospace runoption' rows="5">{? $css ?}</textarea>
+    </div>
+    <div class='small-6 columns'>
+        <h3>{? LAN_CODE_RUN_CUST_SCRIPT ?}</h3>
+        <p>{? LAN_CODE_RUN_CUST_CSS_DESC ?}</p>
+        <textarea id='run_scripts' name='options[scripts]' class='monospace runoption' rows="5">{? $scripts ?}</textarea>
+    </div>
+</div>   

@@ -1,0 +1,362 @@
+.projectDetails h4 {
+    font-size: 1rem;
+    border-bottom: solid 1px #ddd;
+    color: #333;
+}
+
+.projectDetails h2 {
+    font-size: 1.6rem;
+}
+
+.codepad, #output_container {
+    position: relative;
+    display: inline-block;
+    margin: 0;           
+    overflow:hidden;
+    border: 2px solid #999;
+    letter-spacing: normal;
+}
+
+.codepad.active {
+    border: 2px solid #fff;
+}
+
+#output_container {      
+    position: relative;   
+    overflow: auto;
+    padding: 0;
+}
+
+#outputFrame {
+    border: 0;
+    width: 100%;
+}
+
+.codepad_src {
+    display: none;
+}
+
+.f-dropdown.content {
+    /*border-radius: 5px;*/
+    box-shadow: 0 0 4px 0 #333;
+    border: 3px solid #999;
+    padding: 0;
+    z-index: 200;
+}
+
+.headrow {          
+    border-bottom: 1px solid #ddd;
+}
+
+.headrow h1 {
+    font-size: 16px;
+    font-weight: bold;
+    color:  #555;
+    margin: 12px;
+    color: #666;
+}
+
+.headrow .button {
+    margin: 0 1px 0 0;
+}
+
+div.nomargin > a.button {
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+div.nomargin > a.button.white {
+    background: #fff;
+    color: #666;
+    text-align: left;
+}
+
+div.nomargin > a.button.white:hover {
+    background: #2ba6cb;
+    color: #fff;
+}
+
+
+#fileSelector {
+  min-width: 200px;
+}
+
+.autoDropContent {
+  height: 10px;
+  overflow: auto;
+  overflow-x: hidden;  
+}
+
+.autoDropContent.nopadding {
+    padding: 0;
+}
+
+.codepadLabel {
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px 4px;
+    border: 0;
+    font-size: 14px;
+    color: #8f908a;
+    background: transparent;
+    text-align: right;
+    vertical-align: top;
+}
+
+.top-bar-section li:not(.has-form) a:not(.button).togleoutput.active {
+    background: #000;
+}
+
+.outputLabel {
+    z-index: 100;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    padding: 3px 7px;
+    border: 1px solid #bbb;
+    font-size: 12px;
+    color: #8f908a;
+    background: #eee;
+}
+
+.withpadding {
+    padding: 15px;
+}
+
+.smallfont h3 {
+    font-size: 15px;
+    font-weight: bold;
+    color: #c00;
+}
+
+.smallfont p {
+    font-size: 13px;
+}
+
+textarea.monospace {
+    font-family: monospace;
+    color: #666;
+    font-size: 11px;
+}
+
+#topBar i {
+    font-size: 24px;
+}
+
+#topBar i.s18 {
+    font-size: 18px;
+}
+
+#topBar {
+    height: auto;
+}
+
+#topBar a:hover {
+    background: #222;
+}
+
+#topBar a.disabled, .mobileMenu a.disabled {
+    color: #666;
+    cursor: default;
+}
+
+#topBar a.disabled:hover, .mobileMenu a.disabled:hover {
+    background: #333;
+}
+
+.tooltip {
+    /*border-radius: 3px; */
+    border: 2px solid #444;
+    font-size: 12px;
+    padding: 8px;
+    text-shadow: 1px 1px #444;
+    color: #aaa;
+}
+    
+ul.no-bullet > li.open a {
+    background: #2ba6cb;
+    color: #fff;
+}
+
+a.button.dropfoot i {
+    font-size: 16px;
+}
+
+a.button.dropfoot {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid #ccc;
+  border-right: 1px solid #ccc; 
+  border-radius: 0;
+}
+
+a.button.dropfoot.one {
+  border: 0;
+  border-top: 1px solid #ccc;
+  /*border-radius: 0 0 5px 5px;*/
+}
+
+a:first-of-type.dropfoot {                  
+     /*border-radius: 0 0 0 5px;*/
+     border-left: none;
+}
+
+a:last-of-type.dropfoot {
+    border-right: none;
+    /*border-radius: 0 0 5px 0;*/
+}
+
+.projectDetails .label.tag {
+    font-size: 0.856rem;
+    font-weight: bold;
+    padding: 10px;
+}
+
+div.button-group .button.round:first-child {
+    border-radius: 1000px 0 0 1000px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+div.button-group .button.round:last-child {
+    border-radius: 0 1000px 1000px 0;
+}
+
+a.dropfoot.active, a.dropfoot.active:hover {
+    color: #fff;
+    background-color: #2ba6cb;
+}
+
+.button.lesspadding {
+    padding: 4px 6px 2px 8px;
+    font-weight: bold;
+}
+
+.userLabel {
+    display: inline-block;
+    margin: 4px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.dfoot {
+    padding: 0;
+}
+
+.cmsLeft {
+    position: relative;
+    background: #eee;
+    border-right: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+    top: 0;
+    bottom: 0;
+}
+
+a.menulink {
+    display: block;
+}
+
+a.menulink.active {
+    display: block;
+    color: #000;
+}
+
+div.row.full {
+    max-width: 100%;
+}
+
+.dropButton {
+
+}
+
+.top-bar-section li:not(.has-form) a:not(.button).split.dropButton {
+    padding-right: 2.4625rem;
+    position: relative;
+}
+.split.dropButton span {
+    border-left: 1px solid;
+    display: block;
+    height: 50%;
+    position: absolute;
+    right: 0;
+    top: 20%;
+}
+.split.dropButton span::after {
+    border-style: inset;
+    content: "";
+    display: block;
+    height: 0;
+    left: 44%;
+    position: absolute;
+    top: 20%;
+    width: 0;
+}
+.split.dropButton span:active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.split.dropButton span {
+    border-left-color: rgba(255, 255, 255, 0.1);
+}
+.split.dropButton span {
+    width: 1.9375rem;
+}
+.split.dropButton span::after {
+    border-top-style: solid;
+    border-width: 0.305rem;
+    margin-left: -0.375rem;
+    top: 38%;
+}
+.split.dropButton span::after {
+    border-color: #ffffff transparent transparent;
+}
+
+.reveal-modal {
+    border-radius: 0;
+    border: 3px solid #999;
+}
+
+.closeDrop {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-size: 32px;
+    font-weight: bolder;
+    color: #aaa;
+}
+
+.closeDrop:hover {
+    color: #900;
+}
+
+ul.projectlist li {
+    border-bottom: 1px solid #ddd;
+}
+
+ul.projectlist li:last-child {
+    border-bottom: 0;
+}
+
+.bottom-pad {
+    padding-bottom: 10px;
+}
+
+.top-pad {
+    padding-top: 10px;
+}
+
+div.embedItem {
+    margin-top: 10px;
+}
+
+a.embedbutton {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.switch.green input:checked + label {
+    background: none repeat scroll 0 0 #2bcba6;
+}

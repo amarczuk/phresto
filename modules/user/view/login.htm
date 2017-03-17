@@ -1,0 +1,16 @@
+<div class='row'>
+	<div class='small-12 columns'>
+		<h3>Login</h3>
+	</div>
+    <form action="/?mod=user&pg=login" data-target='ajax'>
+        <div class='small-12 columns'><input type="email" name='email' placeholder='email' required></div>
+        <div class='small-12 columns'><input type="password" name='pass' placeholder='password' required></div>                                           
+        <div class='small-12 columns'><button type='submit' class='button tiny small-12 columns'>go</button></div>
+        <input type='hidden' name='id' value='{? $project_id ?}'>
+    </form>
+
+    <div class='small-6 columns text-center social fblogin'><i class='fi-social-facebook'></i></div>
+    <div class='small-6 columns text-center social githublogin'><i class='fi-social-github'></i></div>
+    <div class='small-6 columns text-center social googlelogin'><i class='fi-social-google-plus'></i></div>
+    <div class='small-6 columns text-center social linkedinlogin'><i class='fi-social-linkedin'></i></div>
+</div>

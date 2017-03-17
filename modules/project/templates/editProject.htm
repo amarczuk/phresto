@@ -1,0 +1,34 @@
+
+<div class='row withpadding'>
+  
+  <div class='small-12 medium-7 columns projectDetails bottom-pad'>
+    <h4>About sandbox</h4>
+    <form action="/?mod=project&pg=saveDetails" data-target="ajax" method='post' data-premessage='saving...' data-postmessage='Your changes has been saved'>
+    
+      <input type="hidden" name='id' value='{? $id ?}'>
+
+      <div class='small-12 columns'><input type='text' name='name' value='{? $name ?}' placeholder='sandbox name' required> </div>
+
+      <div class='small-12 columns'>
+          <textarea name='description' placeholder='sandbox description' rows="10">{? $description ?}</textarea> 
+      </div>
+
+      <div class='small-12 columns text-center'><button type='submit' class='button tiny'>save</button></div>
+
+    </form>
+  </div>
+  
+  <div class='small-12 medium-5 columns projectDetails'>
+    <h4>Tags</h4>
+    <form action="/?mod=project&pg=addTag" data-target="ajax" method='post' data-premessage='adding tag...' data-postmessage='Tag has been added'>
+      <input type="hidden" name='id' value='{? $id ?}'>
+      <div class='small-12 columns'><input type='text' name='name' value='' placeholder='add tag' id='addTagVal'> </div>
+    </form>
+    
+    <div id='tagEditList'>
+      {? insert(tags) ?}
+    </div>
+    
+  </div>
+  
+</div>

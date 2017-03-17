@@ -1,0 +1,9 @@
+<?
+
+	$module_dir='rss';
+	$module_name='RSS';
+	
+	$prawa = array('Zmiana ustawieñ', 
+				   'Dodawanie nowych widgetów');
+
+?>

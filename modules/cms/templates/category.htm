@@ -1,0 +1,14 @@
+<div class='nopadding'>
+	<div class='small-2 columns cmsLeft sticky'>
+
+		{? repeat($arts) ?}
+		<a href='/cms/{? $arts[url] ?}' class='mixedlink menulink' data-target='cmsArt'>{? $arts[title] ?}</a>
+		{? /repeat ?}
+		{? if ({? $su ?}=1) ?}
+		<a href='/cms/add/{? $url ?}' class='menulink' data-target='cmsArt'><i class="fi-plus"></i> {? LAN_CMS_ADD ?}</a>
+		{? /if ?}
+	</div>
+	<div class='small-10 columns' id='cmsArt'>
+		{? insert($cmsPageTmpl) ?}
+	</div>
+</div>

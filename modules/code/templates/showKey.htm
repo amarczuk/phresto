@@ -1,0 +1,28 @@
+{? if($showKey=1) ?}   
+    <div id="pop_show_key" class="reveal-modal small" data-reveal aria-hidden='false'>      
+        <a class="close-reveal-modal">&#215;</a>                                                    
+        <div class="row headrow">
+            <h1>Project Key</h1>
+        </div>
+        
+        <div class='row'>                     
+            <div class='small-12 columns'>
+            <p>Save the key to be able to edit your sandbox in the future.</p>
+            
+            <h1 class='text-center'>{? $key ?}</h1>
+            
+            <p>Once this popup is closed there is no way to show this key.</p>
+            </div>
+        </div>
+        
+        <div class='row'>
+            <div class="small-12 columns text-center">
+                <a class="button secondary tiny" onclick="$('#pop_show_key').foundation('reveal', 'close');">Close</a>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        $(document).ready(function(){$('#pop_show_key').foundation('reveal', 'open')});
+    </script>
+{? /if ?}

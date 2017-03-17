@@ -1,0 +1,67 @@
+<div class='small-12 columns'>
+	<h3>Server side</h3>
+
+	<div class='row'>
+
+		<div class="small-12 medium-4 columns">
+		    <div class='infoicons'>
+		        <i class='devicon-php-plain'></i>
+		    </div>
+		    <p>There are several versions of PHP available and you can pick the one you want to use from <b>run options</b> menu.</p>
+		    <p>You can use any function available in the PHP version of choice and most of the popular extensions. For the full list of extensions just execute <i>phpinfo();</i>.</p>
+		    <p>You won't be able to use <b>Apache</b> specific functions (as it's not Apache server).</p>
+		    <p>Use <i>include</i> or <i>require</i> to include other scripts from the sandbox. You can read any file existing in the sandbox or upload files using html form (just put the name of your php script in <i>action</i> attribute). None of the saved files will be available to read next time you execute script</p>
+		</div>
+
+		<div class="small-12 medium-4 columns">
+		    <div class='infoicons'>
+		        <i class='devicon-python-plain'></i>
+		    </div>
+		    <p>You can use python scripts executed via http request (as CGI module). Just make sure that the first thing you print is http header.</p>
+		    <p>Use <i>import</i> to include python scripts from the sandbox (you don't need to create <i>__init__.py</i> - just use the file name).</p>
+		    <p>Make request from html page using any type of http request (that includes posting files).</p>
+		</div>
+
+		<div class="small-12 medium-4 columns">
+		    <div class='infoicons'>
+		        <img src='/modules/main/img/perl.png' class='icon'>
+		    </div>
+		    <p>Create perl scripts and packages. Just use your package file name with <i>use</i> or perl script name with <i>required</i>.</p>
+		    <p>Perl scripts are executed via http (using CGI) and the first printed line should be a valid http header.</p>
+		    <p>Check the list of modules you can use <a href='/cms/perlmodules' class='mixedlink' data-target='cmsContent'>here</a></p>
+		</div>
+	</div>
+
+	<h3>Client side</h3>
+
+	<div class='row'>
+		<div class="small-12 medium-4 columns">
+		    <div class='infoicons'>
+		        <i class='devicon-html5-plain'></i>
+		    </div>
+		    <p>Create html page to test your JS or ajax request to the backend (php, python, perl). If you won't add html tag, doctype and headers this will be auto generated based on the <b>run options</b>. </p>
+		    <p>You can link any file on the sandbox or use it as a form action target. You can attach css or js files created on your sandbox as well.</p>
+		</div>
+		<div class="small-12 medium-4 columns">
+		    <div class='infoicons'>
+		        <i class='devicon-javascript-plain'></i>
+		    </div>
+		    <p>You can execute javascript files directly and they will be wrapped in html. You can specify additional options from the run menu.</p>
+		</div>
+		<div class="small-12 medium-4 columns">
+		    <div class='infoicons'>
+		        <i class='devicon-css3-plain'></i>
+		    </div>
+		    <p>create css files to use them on html pages on your sandbox. You won't be able to execute the css file on its own but it's just a few clicks to create test html page as well.</p>
+		</div>
+	</div>
+
+	<h3>Data source</h3>
+
+	<div class='row'>
+		<div class="small-12 columns">
+		<p>Add <b>xml</b>, <b>json</b>, <b>csv</b> or <b>txt</b> files to pass additional data to the scripts you're testing. You can access them by the file name both on the server and client side</p>
+		</div>
+	</div>
+
+</div>
