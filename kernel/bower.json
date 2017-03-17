@@ -1,0 +1,19 @@
+{
+  "name": "phresto",
+  "homepage": "https://github.com/amarczuk/phresto",
+  "authors": [
+    "adam <adam@marczuk.info>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "jquery": "^3.2.0",
+    "angular": "^1.6.3",
+    "foundation": "^5.5.3",
+    "ace": "^1.2.6",
+    "ckeditor": "^4.6.2",
+    "foundation-icons": "*"
+  }
+}
