@@ -54,6 +54,7 @@ class Router {
 	}
 
 	public static function routeException( $ex ) {
+		http_response_code($ex);
 		return '<h1>Error: ' . $ex . '</h1>';
 	}
 }

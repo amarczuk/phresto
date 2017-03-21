@@ -11,9 +11,10 @@
   "dependencies": {
     "jquery": "^3.2.0",
     "angular": "^1.6.3",
-    "foundation": "^5.5.3",
     "ace": "^1.2.6",
     "ckeditor": "^4.6.2",
-    "foundation-icons": "*"
+    "foundation-icons": "*",
+    "bluebird": "^3.5.0",
+    "foundation-sites": "^6.3.1"
   }
 }

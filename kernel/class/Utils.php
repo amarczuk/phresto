@@ -49,7 +49,6 @@ class Utils {
         } else {
             header( "Refresh: {$delay}; url={$url}" );
         }
-    
     }
     
 }

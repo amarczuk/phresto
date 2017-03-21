@@ -17,14 +17,14 @@ class routes extends Controller {
 			if ( !empty( $module['Controller'] ) ) {
 				foreach ( $module['Controller'] as $file ) {
 					$name = str_replace( '.php', '', $file );
-					$controllers[$name] = [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'controller', 'Phresto\\Modules\\Controller\\' . $name ) ];
+					array_push($controllers, [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'controller', 'Phresto\\Modules\\Controller\\' . $name ) ]);
 				}
 			}
 
 			if ( !empty( $module['Model'] ) ) {
 				foreach ( $module['Model'] as $file ) {
 					$name = str_replace( '.php', '', $file );
-					$models[$name] = [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'model', 'Phresto\\Modules\\Model\\' . $name ) ];
+					array_push($models, [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'model', 'Phresto\\Modules\\Model\\' . $name ) ]);
 				}
 			}
 		}
@@ -65,7 +65,7 @@ class routes extends Controller {
 				$describe['params'][] = $param->name;
 			}
 
-			$methods[$method->name] = $describe;
+			$methods[] = $describe;
 		}
 
 		return $methods;

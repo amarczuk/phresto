@@ -22,6 +22,9 @@ class View {
 
 	public function __construct( $module = null ) {
 		$this->config = Config::getConfig( 'view', $module );
+		if (is_array($this->config['view']) && $this->config['view']['inherit'] == 'yes') {
+			$this->config = Config::mergeConfigs( Config::getConfig( 'view' ), $this->config );
+		}
 		if ( empty( self::$lang ) ) {
 			self::$lang = $this->config['page']['lang'];
 		}
@@ -526,7 +529,14 @@ class View {
 			}
 		}
 		
-		$head.="\n</head>\n<body>";
+		$head .= "\n</head>\n<body";
+		if ( is_array( $this->config['body'] ) ) {
+			foreach( $this->config['body'] as $key => $var)
+			{
+				$head .= "\n\t{$key}=\"{$var}\"";
+			}
+		}
+		$head .= ">\n\n";
 	
 		return $head;
 	}

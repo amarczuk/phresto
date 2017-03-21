@@ -23,6 +23,22 @@ class Config {
         return self::$configCache[ $path ];
     }
 
+    public static function mergeConfigs(array &$config, array &$config2) {
+        $merged = $config;
+        foreach ($config2 as $key => &$value)
+        {
+            if (is_array($value) && isset($merged[$key]) && is_array($merged[$key]))
+            {
+                $merged[$key] = self::mergeConfigs($merged[$key], $value);
+            }
+            else
+            {
+                $merged[$key] = $value;
+            }
+        }
+        return $merged;
+    }
+
     public static function mockConfig( $name, $config, $module = null ) {
         $path = self::getPath( $name, $module );
     	self::$configCache[$path] = $config;

@@ -47,6 +47,8 @@ class Controller {
 				$args[] = $this->query[$param->name];
 			} else if ( isset( $this->routeMapping[$param->name] ) && isset( $this->route[$this->routeMapping[$param->name]] ) ) {
 				$args[] = $this->route[$this->routeMapping[$param->name]];
+			} else if ( isset( $this->routeMapping[$reqType] ) && isset( $this->routeMapping[$reqType][$param->name] ) && isset( $this->route[$this->routeMapping[$reqType][$param->name]] ) ) {
+				$args[] = $this->route[$this->routeMapping[$reqType][$param->name]];
 			} else {
 				$args[] = $param->getDefaultValue();
 			}

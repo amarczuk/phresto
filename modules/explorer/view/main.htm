@@ -1,2 +1,72 @@
-<h1>Explorer</h1>
+<div ng-controller="explorerAppController">
+	<div class="row">
+		<div class="small-12 columns">
+			<h1>Explorer</h1>
+		</div>
+	</div>
 
+	<div class="row">
+		<div class="small-12 columns">
+			<h2>Models</h2>
+		</div>
+	</div>
+
+	<div class="row">
+		<ul class="accordion" 
+			data-accordion
+		  	data-multi-expand="true" 
+		  	data-allow-all-closed="true">
+		  <li class="accordion-item" 
+		  	  data-accordion-item 
+		  	  ng-repeat="model in routes.models">
+		    <a href="#" class="accordion-title">/{{model.endpoint}}</a>
+		    <div class="accordion-content" data-tab-content>
+		      <ul class="tabs" data-tabs id="model-{{model.endpoint}}-tabs">
+				  <li class="tabs-title" ng-repeat="method in model.methods">
+				  	<a href="#model-{{model.endpoint}}-panel-{{method.name}}">{{method.name}}</a>
+				  </li>
+				</ul>
+				<div class="tabs-content" data-tabs-content="model-{{model.endpoint}}-tabs">
+					<div class="tabs-panel" id="model-{{model.endpoint}}-panel-{{method.name}}" ng-repeat="method in model.methods">
+						{{method.name}}  
+					</div>
+				</div>
+		    </div>
+		  </li>
+		</ul>
+
+	</div>
+
+	<div class="row">
+		<div class="small-12 columns">
+			<h2>Controllers</h2>
+		</div>
+	</div>
+
+	<div class="row">
+		<ul class="accordion" 
+			data-accordion
+		  	data-multi-expand="true" 
+		  	data-allow-all-closed="true">
+		  <li class="accordion-item" 
+		  	  data-accordion-item 
+		  	  ng-repeat="controller in routes.controllers">
+		    <a href="#" class="accordion-title">/{{controller.endpoint}}</a>
+		    <div class="accordion-content" data-tab-content>
+		      	<ul class="tabs" data-tabs id="{{controller.endpoint}}-tabs">
+				  <li class="tabs-title" ng-repeat="method in controller.methods">
+				  	<a href="#{{controller.endpoint}}-panel-{{method.name}}">{{method.name}}</a>
+				  </li>
+				</ul>
+				<div class="tabs-content" data-tabs-content="{{controller.endpoint}}-tabs">
+					<div class="tabs-panel" id="{{controller.endpoint}}-panel-{{method.name}}" ng-repeat="method in controller.methods">
+						{{method.name}}  
+					</div>
+				</div>
+		    </div>
+		  </li>
+		</ul>
+
+	</div>
+
+</div>
