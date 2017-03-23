@@ -25,7 +25,7 @@ class ModelController extends Controller {
 	}
 
 	protected function getNextRoute() {
-		$route = $this->routeMapping;
+		$route = ( is_array( $this->routeMapping[$this->reqType] ) ) ? $this->routeMapping[$this->reqType] : $this->routeMapping;
 		array_shift( $route );
 		array_shift( $route );
 		return implode( '/', $route );

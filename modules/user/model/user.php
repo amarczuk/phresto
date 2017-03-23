@@ -14,7 +14,7 @@ class user extends MySQLModel {
     protected static $_fields = [ 'id', 'email', 'pass', 'name', 'nick', 'date_payment', 'status', 'date_added', 'date_logged' ];
 
     protected function filterJson( $fields ) {
-    	$fields['pass'] = '';
+    	$fields['pass'] = '*********';
     	return $fields;
     }
 }

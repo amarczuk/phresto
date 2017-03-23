@@ -15,7 +15,7 @@ class XMLParser
          {
              $this->result = $this->xml2array($content, $get_attr);
              
-             if ($out!='UTF-9')
+             if ($out!='UTF-8')
              {
                  $this->result = $this->Conv($out, $this->result);
              }

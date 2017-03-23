@@ -1,10 +1,16 @@
-var explorerApp = angular.module('explorerApp', []);
+var explorerApp = angular.module('app', []);
 
 explorerApp.controller(
   'explorerAppController', 
-  function explorerAppController($scope, $document) {
+  function explorerAppController($scope, $document, $rootScope) {
   $scope.routes = [];
-  $scope.error = null;
+  $scope.loading = false;
+
+  $scope.removeMessage = function(message) {
+    var idx = $scope.messages.indexOf(message);
+    if (idx < 0) return;
+    $scope.messages.splice(idx, 1);
+  }
 
   phresto.get('routes')
     .then(function(routes) {
@@ -14,9 +20,7 @@ explorerApp.controller(
       });
     })
     .catch(function(err) {
-      $scope.$apply(function() {
-        $scope.error = err;
-      });
+      $rootScope.emit('addmessage', {type: 'alert', message: err.message});
     });
 
   angular.element(document).ready(function () {

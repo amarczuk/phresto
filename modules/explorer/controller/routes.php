@@ -3,6 +3,7 @@
 namespace Phresto\Modules\Controller;
 use Phresto\Controller;
 use Phresto\Config;
+use Phresto\View;
 
 class routes extends Controller {
 
@@ -10,13 +11,15 @@ class routes extends Controller {
 
 	public function get() {
 		$modules = Config::getConfig( 'modules' );
-		$models = [];
+		$endpoints = [];
 		$controllers = [];
 
 		foreach ( $modules as $modname => $module ) {
 			if ( !empty( $module['Controller'] ) ) {
 				foreach ( $module['Controller'] as $file ) {
 					$name = str_replace( '.php', '', $file );
+					if ( in_array( $name, $endpoints ) ) continue;
+					$endpoints[] = $name;
 					array_push($controllers, [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'controller', 'Phresto\\Modules\\Controller\\' . $name ) ]);
 				}
 			}
@@ -24,11 +27,13 @@ class routes extends Controller {
 			if ( !empty( $module['Model'] ) ) {
 				foreach ( $module['Model'] as $file ) {
 					$name = str_replace( '.php', '', $file );
-					array_push($models, [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'model', 'Phresto\\Modules\\Model\\' . $name ) ]);
+					if ( in_array( $name, $endpoints ) ) continue;
+					$endpoints[] = $name;
+					array_push($controllers, [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'model', 'Phresto\\Modules\\Model\\' . $name ) ]);
 				}
 			}
 		}
-		return json_encode( ['controllers' => $controllers, 'models' => $models ],  JSON_PRETTY_PRINT );
+		return View::jsonResponse( [ 'controllers' => $controllers ] );
 	}
 
 	private function getMethods( $type, $class ) {
@@ -46,7 +51,7 @@ class routes extends Controller {
 				if ( !array_key_exists( $request, $methods ) ) {
 					$bodyparams = ( in_array( $request, $withBody ) ) ? $fields : [];
 
-					$methods[] = [ 'name' => $request, 'urlparams' => $params, 'bodyparams' => $bodyparams ];
+					$methods[] = [ 'name' => $request, 'urlparams' => $params, 'params' => $bodyparams ];
 				}
 			}
 
@@ -54,6 +59,8 @@ class routes extends Controller {
 		}
 		
 		$classMethods = $reflection->getMethods( \ReflectionMethod::IS_PUBLIC );
+		$staticProps = $reflection->getDefaultProperties(); 
+		$fields = $staticProps['routeMapping'];
 
 		foreach ( $classMethods as $method ) {
 
@@ -61,7 +68,21 @@ class routes extends Controller {
 
 			$describe = [ 'name' => $method->name, 'urlparams' => [] ];
 			$params = $method->getParameters();
+			$ignore = [];
+
+			$routeMapping = ( is_array($fields[$method->name] ) ) ? $fields[$method->name] : $fields;
+			$values = array_values($routeMapping);
+			if ( is_array($values[0] ) ) $routeMapping = [];
+
+			foreach ( $routeMapping as $field => $index ) {
+				if ( isset($params[$index]) && $params[$index]->name == $field ) {
+					$describe['urlparams'][] = $field;
+					$ignore[] = $field;
+				}
+			}
+
 			foreach ( $params as $param ) {
+				if ( in_array($param->name, $ignore ) ) continue;
 				$describe['params'][] = $param->name;
 			}
 

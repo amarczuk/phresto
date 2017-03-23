@@ -14,6 +14,10 @@ class View {
     private $flushed = false;
     private $flush_no = 0;
 
+    public static function jsonResponse( $response ) {
+    	return [ 'body' => json_encode( $response, JSON_PRETTY_PRINT ), 'content-type' => 'application/json' ];
+    }
+
 	public static function getView( $name, $module = null ) {
 		if ( isset( self::$instances[$name] ) ) return self::$instances[$name];
 		self::$instances[$name] = new View( $module );
@@ -154,7 +158,6 @@ class View {
 	
 	public function get( $continue = true ) {
 		if ( !$this->flushed || !$continue ) {
-            header("Content-Type: text/html; charset={$this->config['page']['charset']}");
 		    $out = $this->getHead();
         }
 		
@@ -170,13 +173,26 @@ class View {
 			$out .= self::render( $element );
 		}
 		
+		$out .= $this->closingJS();
 		$out .= "\n\n</body>\n\n</html>";
-		
 		$out = $this->remove_utf8_bom( $out );
-	
+
+		if ( !$this->flushed || !$continue ) {
+			$out = [ 'body' => $out, 'content-type' => "text/html; charset={$this->config['page']['charset']}" ];
+		}
 		return $out;
 	}
 	
+	private function closingJS() {
+		if ( !is_array( $this->config['closingjs'] ) ) return '';
+		$out = '';
+		foreach ($this->config['closingjs'] as $js) {
+			$out .= "\n<script type='text/javascript' src=\"{$js}\"></script>";
+		}
+
+		return $out;
+	}
+
 	private function remove_utf8_bom( $text ) {
 		$bom = pack( 'H*','EFBBBF' );
 		$text = str_replace( $bom, '', $text );
@@ -541,9 +557,8 @@ class View {
 		return $head;
 	}
 	
-	
 	public function debug( $data ) {
-		$this->add( 'inline', '<pre>'.str_replace('<', '&lt;', print_r($data, true)).'</pre>' );
+		$this->add( 'inline', '<div class="debug-output">'.str_replace('<', '&lt;', print_r($data, true)).'</div>' );
 	}
 
     public static function closeTags( $html, $tags ) {
