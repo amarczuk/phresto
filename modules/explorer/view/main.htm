@@ -12,16 +12,9 @@
 	</div>
 
 	<div class="row">
-		<ul class="accordion" 
-			data-accordion
-		  	data-multi-expand="true" 
-		  	data-allow-all-closed="true">
-		  <li class="accordion-item" 
-		  	  data-accordion-item 
-		  	  ng-repeat="controller in routes.controllers">
-		    <a href="#" class="accordion-title">/{{controller.endpoint}}</a>
-		    <div class="accordion-content" data-tab-content>
-		      	<ul class="tabs" data-tabs id="{{controller.endpoint}}-tabs">
+		<accordion close-others="false">
+			<accordion-group heading="/{{controller.endpoint}}" ng-repeat="controller in routes.controllers">
+				<ul class="tabs" data-tabs id="{{controller.endpoint}}-tabs">
 				  <li class="tabs-title" ng-repeat="method in controller.methods">
 				  	<a href="#{{controller.endpoint}}-panel-{{method.name}}">{{method.name}}</a>
 				  </li>
@@ -38,11 +31,10 @@
 						</div>
 					</div>
 				</div>
-		    </div>
-		  </li>
-		</ul>
+		    </accordion-group>
+		</accordion>
 
 	</div>
 
-	
+	<message/>
 </div>
