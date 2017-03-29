@@ -1,3 +1,15 @@
+body {
+    font-family: arial, sans-serif;
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 2;
+    letter-spacing: 0.09em;
+}
+
+div .tabs-content {
+    color: #444;
+}
+
 #messageContainer {
     position: fixed;
     top: 40px;

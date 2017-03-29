@@ -53,8 +53,15 @@ class Router {
 	    return $instance->exec();
 	}
 
-	public static function routeException( $ex ) {
-		http_response_code($ex);
-		return '<h1>Error: ' . $ex . '</h1>';
+	public static function routeException( $ex = 500, $message = '', $trace = '' ) {
+		http_response_code((int)$ex);
+		$out = '<h1>Error: ' . $ex . '</h1>';
+		if (!empty($message)) {
+			$out .= '<h2>' . $message . '</h2>';
+		}
+		if (!empty($trace)) {
+			$out .= '<pre>' . print_r($trace, true) . '</pre>';
+		}
+		return $out;
 	}
 }

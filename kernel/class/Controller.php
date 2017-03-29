@@ -42,20 +42,37 @@ class Controller {
 		$args = [];
 		foreach ( $params as $param ) {
 			if ( isset( $this->body[$param->name] ) ) {
-				$args[] = $this->body[$param->name];
+				$args[] = $this->getParamValue( $param, $this->body[$param->name] );
 			} else if ( isset( $this->query[$param->name] ) ) {
-				$args[] = $this->query[$param->name];
-			} else if ( isset( $this->routeMapping[$param->name] ) && isset( $this->route[$this->routeMapping[$param->name]] ) ) {
-				$args[] = $this->route[$this->routeMapping[$param->name]];
-			} else if ( isset( $this->routeMapping[$reqType] ) && isset( $this->routeMapping[$reqType][$param->name] ) && isset( $this->route[$this->routeMapping[$reqType][$param->name]] ) ) {
-				$args[] = $this->route[$this->routeMapping[$reqType][$param->name]];
-			} else {
+				$args[] = $this->getParamValue( $param, $this->query[$param->name] );
+			} else if ( isset( $this->routeMapping[$param->name] ) && isset( $this->route[$this->routeMapping[$param->name]] ) && $this->route[$this->routeMapping[$param->name]] != '') {
+				$args[] = $this->getParamValue( $param, $this->route[$this->routeMapping[$param->name]] );
+			} else if ( isset( $this->routeMapping[$this->reqType] ) && isset( $this->routeMapping[$this->reqType][$param->name] ) && isset( $this->route[$this->routeMapping[$this->reqType][$param->name]] ) && $this->route[$this->routeMapping[$this->reqType][$param->name]] != '') {
+				$args[] = $this->getParamValue( $param, $this->route[$this->routeMapping[$this->reqType][$param->name]] );
+			} else if ( $param->isDefaultValueAvailable() ) {
 				$args[] = $param->getDefaultValue();
+			} else {
+				$args[] = null;
 			}
 		}
 
 		$method->setAccessible( true );
 		return $method->invokeArgs( $this, $args );
+	}
+
+	protected function getParamValue(\ReflectionParameter $param, $value) {
+		if ( defined( PHP_MAJOR_VERSION ) && PHP_MAJOR_VERSION >= 7)
+			if ( $param->hasType() ) {
+				$type = $param->getType();
+				if ( $type == 'boolean' && $value == 'false' ) {
+					$value = false;
+				} else {
+					settype( $value, $param->getType() );
+				}
+			}
+		}
+		// TODO: maybe use doc comment to get types in PHP5?
+		return $value;
 	}
 
 	protected function auth() {

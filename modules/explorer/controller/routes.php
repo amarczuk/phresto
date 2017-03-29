@@ -36,6 +36,14 @@ class routes extends Controller {
 		return View::jsonResponse( [ 'controllers' => $controllers ] );
 	}
 
+	private function hasParam( $params, $field ) {
+		foreach ($params as $param) {
+			if ($param->name == $field) return true;
+		}
+
+		return false;
+	}
+
 	private function getMethods( $type, $class ) {
 		$reflection = new \ReflectionClass( $class );
 
@@ -75,8 +83,8 @@ class routes extends Controller {
 			if ( is_array($values[0] ) ) $routeMapping = [];
 
 			foreach ( $routeMapping as $field => $index ) {
-				if ( isset($params[$index]) && $params[$index]->name == $field ) {
-					$describe['urlparams'][] = $field;
+				if ( $this->hasParam($params, $field) ) {
+					$describe['urlparams'][$index] = $field;
 					$ignore[] = $field;
 				}
 			}

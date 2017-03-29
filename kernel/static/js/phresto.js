@@ -51,7 +51,9 @@ phresto = (function() {
 
 	var exists = function(name, id) {
 		return new Promise(function(resolve, reject) {
-			makeRequest('HEAD', name + '/' + id)
+			var url = name;
+			if (id) url += '/' + id;
+			makeRequest('HEAD', url)
 				.then(function() {
 					resolve(true);
 				})
@@ -73,8 +75,16 @@ phresto = (function() {
 		return makeRequest('DELETE', name + '/' + id);
 	}
 
+	var Delete = function(url) {
+		return makeRequest('DELETE', url);
+	}
+
 	var update = function(name, id, params) {
-		return makeRequest('PATCH', name + '/' + id);
+		return makeRequest('PATCH', name + '/' + id. params);
+	}
+
+	var patch = function(url, params) {
+		return makeRequest('PATCH', url, params);
 	}
 
 	var upsert = function(name, params) {
@@ -84,11 +94,15 @@ phresto = (function() {
 	return {
 		get: get,
 		getById: getById,
+		head: exists,
 		exists: exists,
-		create: create,
+		post: create,
 		destroy: destroy,
+		delete: Delete,
 		update: update,
-		upsert: upsert
+		patch: patch,
+		upsert: upsert,
+		put: upsert
 	}
 
 })();

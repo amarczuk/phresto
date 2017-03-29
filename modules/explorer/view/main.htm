@@ -22,11 +22,36 @@
 				<div class="tabs-content" data-tabs-content="{{controller.endpoint}}-tabs">
 					<div class="tabs-panel" id="{{controller.endpoint}}-panel-{{method.name}}" ng-repeat="method in controller.methods">
 						<div class="row">
+							<div class="small-12 columns">
+								<fieldset class="fieldset">
+	  								<legend>url</legend>
+									<b>/{{controller.endpoint}}</b>
+									<span ng-repeat="param in method.urlparams">
+										/ <input type="text" ng-model="method.url[$index]" placeholder="{{param}}" class="small" style="display: inline-block; width: auto; font-size: 14px; height: 24px;">
+									</span>
+								</fieldset>						
+							</div>
+						</div>
+						<div class="row">
 							<div class="small-12 medium-6 columns">
+								<fieldset class="fieldset" ng-if="method.params && method.params.length">
+	  								<legend>request parameters</legend>
+
+	  								<label ng-repeat="param in method.params">
+										{{param}}
+										<textarea ng-model="method.body[param]" style="min-height: 28px"></textarea>
+									</label>
+
+								</fieldset>
 								<button class="button" ng-click="makeRequest(controller, method)" ng-disabled="loading">make request</button> 
 							</div>
 							<div class="small-12 medium-6 columns">
-								
+								<fieldset class="fieldset">
+	  								<legend>output</legend>
+	  								<div style="height: 200px; overflow: auto;">
+	  									{{method.response | json}}
+	  								</div>
+								</fieldset>
 							</div>
 						</div>
 					</div>

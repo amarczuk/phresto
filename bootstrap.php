@@ -8,6 +8,8 @@ try {
 	$response = Phresto\Router::route();
 	header( 'Content-Type: ' . $response['content-type'] );
 	echo $response['body'];
-} catch( Exception $e ) {
+} catch( Phresto\Exception\RequestException $e ) {
 	echo Phresto\Router::routeException( $e->getMessage() );
+} catch( Exception $e ) {
+	echo Phresto\Router::routeException( 500, $e->getMessage(), $e->getTrace() );
 }
