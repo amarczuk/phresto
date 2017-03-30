@@ -77,6 +77,16 @@ class Model implements ModelInterface, \JsonSerializable {
         $this->set( static::find( [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] )[0] );
     }
 
+    public function update( $modelArray ) {
+        foreach( static::$_fields as $field ) {
+            if ( isset( $modelArray[$field] ) ) {
+                $this->_properties[$field] = $modelArray[$field];
+            }
+        }
+
+        if ( !empty( $this->_properties[static::INDEX] ) ) $this->_new = false;
+    }
+
     protected function set( $modelArray ) {
     	$this->_properties = [];
     	foreach( static::$_fields as $field ) {

@@ -2,6 +2,7 @@
 
 namespace Phresto;
 use Phresto\Controller;
+use Phresto\View;
 use Phresto\Exception\RequestException;
 
 class ModelController extends Controller {
@@ -44,8 +45,13 @@ class ModelController extends Controller {
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );
 		}
-		
-		return ;
+
+		$modelInstance = Container::{$this->modelName}( $id );
+		if ( !isset( $modelInstance->id ) ) {
+			throw new RequestException( '404' );
+		}
+
+		return null;
 	}
 
 	protected function get( $id = null, Model $model = null ) {
@@ -54,14 +60,18 @@ class ModelController extends Controller {
 				throw new RequestException( '404' );
 			}
 			$modelName = $this->modelName;
-			return json_encode( $modelName::findRelated( $this->contextModel ) );
+			return View::jsonResponse( $modelName::findRelated( $this->contextModel ) );
 		}
 
 		if ( !empty( $model ) ) {
 			return $this->escalate( $id, $model );
 		}
 
-		return json_encode( Container::{$this->modelName}( $id ) );
+		$modelInstance = Container::{$this->modelName}( $id );
+		if ( !isset( $modelInstance->id ) ) {
+			throw new RequestException( '404' );
+		}
+		return View::jsonResponse( $modelInstance );
 	}
 
 	protected function post( $id = null, $model = null ) {
@@ -74,10 +84,10 @@ class ModelController extends Controller {
 
 		$modelInstance = Container::{$this->modelName}( $this->body );
 		$modelInstance->save();
-		return json_encode( $modelInstance );		
+		return View::jsonResponse( $modelInstance );		
 	}
 
-	protected function put( $id = null, $model = null ) {
+	protected function patch( $id = null, $model = null ) {
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );
 		}
@@ -91,20 +101,27 @@ class ModelController extends Controller {
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
-		$modelInstance->setIndex( $id );
+		if ( empty( $modelInstance->id ) ) {
+			throw new RequestException( '404' );
+		}
+		$modelInstance->update( $this->body );
 		$modelInstance->save();
-		return json_encode( $modelInstance );
+		return View::jsonResponse( $modelInstance );
 	}
 
-	protected function patch( $id = null, $model = null ) {
+	protected function put( $id = null, $model = null ) {
 		if ( !empty( $id ) && !empty( $model ) ) {
 			return $this->escalate( $id, $model );
 		}
 
-		$modelInstance = Container::{$this->modelName}( $this->body );
-		$modelInstance->id = $id;
+		if ( empty( $this->body ) ) {
+			throw new RequestException( '204' );
+		}
+
+		$modelInstance = Container::{$this->modelName}( $id );
+		$modelInstance->update( $this->body );
 		$modelInstance->save();
-		return json_encode( $modelInstance );
+		return View::jsonResponse( $modelInstance );
 	}
 
 	protected function delete( $id = null, $model = null ) {
@@ -117,7 +134,11 @@ class ModelController extends Controller {
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
+		if ( empty( $modelInstance->id ) ) {
+			throw new RequestException( '404' );
+		}
+		$oldModel = View::jsonResponse( $modelInstance );
 		$modelInstance->delete();
-		return json_encode( $modelInstance );
+		return $oldModel;
 	}
 }

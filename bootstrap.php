@@ -6,10 +6,11 @@ Phresto\Utils::registerAutoload();
 
 try {
 	$response = Phresto\Router::route();
-	header( 'Content-Type: ' . $response['content-type'] );
-	echo $response['body'];
 } catch( Phresto\Exception\RequestException $e ) {
-	echo Phresto\Router::routeException( $e->getMessage() );
+	$response = Phresto\Router::routeException( $e->getMessage() );
 } catch( Exception $e ) {
-	echo Phresto\Router::routeException( 500, $e->getMessage(), $e->getTrace() );
+	$response = Phresto\Router::routeException( 500, $e->getMessage(), $e->getTrace() );
 }
+
+header( 'Content-Type: ' . $response['content-type'] );
+echo $response['body'];

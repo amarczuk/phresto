@@ -61,7 +61,7 @@ class Controller {
 	}
 
 	protected function getParamValue(\ReflectionParameter $param, $value) {
-		if ( defined( PHP_MAJOR_VERSION ) && PHP_MAJOR_VERSION >= 7)
+		if ( defined( PHP_MAJOR_VERSION ) && PHP_MAJOR_VERSION >= 7) {
 			if ( $param->hasType() ) {
 				$type = $param->getType();
 				if ( $type == 'boolean' && $value == 'false' ) {

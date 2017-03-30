@@ -2,6 +2,8 @@
 
 namespace Phresto;
 
+use Phresto\View;
+
 class Router {
 
 	public static function route() {
@@ -55,6 +57,14 @@ class Router {
 
 	public static function routeException( $ex = 500, $message = '', $trace = '' ) {
 		http_response_code((int)$ex);
+		if ( mb_strpos( $_SERVER["CONTENT_TYPE"], 'application/json' ) !== false ) {
+			return View::jsonResponse( [
+				'status' => $ex,
+				'message' => $message,
+				'trace' => $trace
+			] );
+		}
+
 		$out = '<h1>Error: ' . $ex . '</h1>';
 		if (!empty($message)) {
 			$out .= '<h2>' . $message . '</h2>';
@@ -62,6 +72,6 @@ class Router {
 		if (!empty($trace)) {
 			$out .= '<pre>' . print_r($trace, true) . '</pre>';
 		}
-		return $out;
+		return [ 'body' => $out, 'content-type' => 'text/html' ];
 	}
 }

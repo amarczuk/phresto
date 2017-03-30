@@ -59,7 +59,7 @@ class MySQLModel extends Model {
                 $fields[] = $key . ' = :' . $key;
             }
     		$sql = "UPDATE " . static::COLLECTION . " SET " . implode( ', ', $fields );
-    		$sql .= " WHERE " . static::INDEX . " = :" . static::INDEX . "' LIMIT 1";
+    		$sql .= " WHERE " . static::INDEX . " = :" . static::INDEX . " LIMIT 1";
     	} else {
     		$sql = "INSERT INTO " . static::COLLECTION . " ( `" . implode( '`, `', static::$_fields ) . "` ) ";
     		$sql .= "VALUES ( " . implode( ', :', static::$_fields ) . " )";

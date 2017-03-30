@@ -7,13 +7,26 @@ RequestError.prototype = Object.create(Error.prototype);
 RequestError.prototype.constructor = RequestError;
 
 phresto = (function() {
+
+	var OAuthToken = '';
+
+	var setToken = function(token) {
+		OAuthToken = token;
+	}
+
 	var makeRequest = function(type, url, parameters) {
 		return new Promise(function(resolve, reject) {
 			var xmlhttp = new XMLHttpRequest();
 			xmlhttp.onreadystatechange = function() {
 
 			    if (this.readyState == 4 && this.status != 200) {
-			    	return reject(new RequestError('Request failed with status ' + this.status + '. ' + this.responseText, this.status));
+			    	try {
+			        	var result = JSON.parse(this.responseText);
+			        	reject(new RequestError(result, this.status));
+			        } catch(e) {
+			        	reject(new RequestError('Request failed with status ' + this.status + '. ' + this.responseText, this.status));
+			        }
+			    	return;
 			    }
 
 			    if (this.readyState == 4 && this.status == 200 && type == 'HEAD') {
@@ -37,6 +50,9 @@ phresto = (function() {
 
 			xmlhttp.open(type, url, true);
 			xmlhttp.setRequestHeader('Content-Type', 'application/json');
+			if (OAuthToken) {
+				xmlhttp.setRequestHeader('Authorization', 'Bearer ' + OAuthToken);
+			}
 			xmlhttp.send(requestBody);
 		});
 	}
@@ -46,7 +62,7 @@ phresto = (function() {
 	}
 
 	var getById = function(name, id) {
-		return makeRequest('GET', name + '/' + id);
+		return get(name + '/' + id);
 	}
 
 	var exists = function(name, id) {
@@ -72,7 +88,7 @@ phresto = (function() {
 	}
 
 	var destroy = function(name, id) {
-		return makeRequest('DELETE', name + '/' + id);
+		return Delete(name + '/' + id);
 	}
 
 	var Delete = function(url) {
@@ -80,7 +96,7 @@ phresto = (function() {
 	}
 
 	var update = function(name, id, params) {
-		return makeRequest('PATCH', name + '/' + id. params);
+		return patch( name + '/' + id, params);
 	}
 
 	var patch = function(url, params) {
@@ -102,7 +118,8 @@ phresto = (function() {
 		update: update,
 		patch: patch,
 		upsert: upsert,
-		put: upsert
+		put: upsert,
+		setToken: setToken
 	}
 
 })();
