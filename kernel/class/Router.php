@@ -57,21 +57,18 @@ class Router {
 
 	public static function routeException( $ex = 500, $message = '', $trace = '' ) {
 		http_response_code((int)$ex);
+		$resp = [
+			'status' => $ex,
+			'message' => $message,
+			'trace' => $trace
+		];
 		if ( mb_strpos( $_SERVER["CONTENT_TYPE"], 'application/json' ) !== false ) {
-			return View::jsonResponse( [
-				'status' => $ex,
-				'message' => $message,
-				'trace' => $trace
-			] );
+			return View::jsonResponse( $resp );
 		}
 
-		$out = '<h1>Error: ' . $ex . '</h1>';
-		if (!empty($message)) {
-			$out .= '<h2>' . $message . '</h2>';
-		}
-		if (!empty($trace)) {
-			$out .= '<pre>' . print_r($trace, true) . '</pre>';
-		}
-		return [ 'body' => $out, 'content-type' => 'text/html' ];
+		$view = View::getView('error');
+		$view->add('error', $resp);
+		
+		return $view->get();
 	}
 }

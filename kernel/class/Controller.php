@@ -32,7 +32,10 @@ class Controller {
 	public function exec() {
 		$reflection = new \ReflectionClass( static::CLASSNAME );
 
-		if ( $reflection->hasMethod( $this->reqType ) ) {
+		if ( !empty($this->route[0]) && $reflection->hasMethod( $this->route[0] . '_' . $this->reqType ) ) {
+			$method = $reflection->getMethod( $this->route[0] . '_' . $this->reqType );
+			array_shift( $this->route );
+		} else if ( $reflection->hasMethod( $this->reqType ) ) {
 			$method = $reflection->getMethod( $this->reqType );
 		} else {
 			throw new Exception\RequestException( '404' );

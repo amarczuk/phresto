@@ -22,4 +22,11 @@ class explorer extends Controller {
 	public function post( $a, $b, $c = "def", $d = 123 ) {
 		return View::jsonResponse([$a,$b,$c,$d]);
 	}
+
+	/**
+	* @param int $a
+	*/
+	public function test_get() {
+		return View::jsonResponse(['a'=>'b']);
+	}
 }
