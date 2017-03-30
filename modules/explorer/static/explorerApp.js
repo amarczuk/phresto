@@ -3,7 +3,8 @@ angular.module('app', ['mm.foundation']).controller(
   [ '$scope',
     '$document',
     '$rootScope',
-    function($scope, $document, $rootScope) {
+    '$timeout',
+    function($scope, $document, $rootScope, $timeout) {
       $scope.routes = [];
       $scope.loading = false;
 
@@ -17,11 +18,13 @@ angular.module('app', ['mm.foundation']).controller(
         phresto[method.name](url, method.body)
           .then(function(response) {
             method.response = response;
+            method.responseStatus = 200;
             $scope.loading = false;
             $scope.$apply();
           })
           .catch(function(err) {
             method.response = err.message;
+            method.responseStatus = err.status;
             $scope.loading = false;
             $scope.$apply();
           });
@@ -39,7 +42,19 @@ angular.module('app', ['mm.foundation']).controller(
         });
 
       angular.element(document).ready(function () {
-        $document.foundation();
+        $timeout(function() {
+          $document.foundation();
+        }, 500);
       });
     }
   ]);
+
+angular.module('app').filter('prettyJSON', function () {
+    function prettyPrintJson(json) {
+
+      if (typeof json != 'object') return json;
+
+      return JSON.stringify(json, null, '  ');
+    }
+    return prettyPrintJson;
+});

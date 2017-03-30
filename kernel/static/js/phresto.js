@@ -1,7 +1,7 @@
 function RequestError(message, status) {
   this.name = 'RequestError';
-  this.message = message || 'Default Message';
-  this.status = status || 0;
+  this.message = message;
+  this.status = status;
 }
 RequestError.prototype = Object.create(Error.prototype);
 RequestError.prototype.constructor = RequestError;
@@ -38,7 +38,7 @@ phresto = (function() {
 			        	var result = JSON.parse(this.responseText);
 			        	resolve(result);
 			        } catch(e) {
-			        	reject(new RequestError(e.message, this.status));
+			        	resolve(this.responseText);
 			        }
 			    }
 			};
@@ -75,7 +75,7 @@ phresto = (function() {
 				})
 				.catch(function(error) {
 					if (error.name = 'RequestError' && error.status == 404) {
-						return resolve(false);
+						return reject(new RequestError(false, 404));
 					}
 
 					reject(error);

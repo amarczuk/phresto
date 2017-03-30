@@ -47,9 +47,9 @@
 							</div>
 							<div class="small-12 medium-6 columns">
 								<fieldset class="fieldset">
-	  								<legend>output</legend>
-	  								<div style="height: 200px; overflow: auto;">
-	  									{{method.response | json}}
+	  								<legend>output<span ng-if="method.responseStatus"> ({{method.responseStatus}})</span></legend>
+	  								<div style="width: 100%; height: 200px; overflow: auto; word-break: break-all;">
+	  									<pre style="white-space: pre-wrap;">{{method.response | prettyJSON}}</pre>
 	  								</div>
 								</fieldset>
 							</div>
