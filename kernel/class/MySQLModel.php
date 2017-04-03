@@ -2,6 +2,7 @@
 
 namespace Phresto;
 use Phresto\Model;
+use Phresto\Container;
 
 class MySQLModel extends Model {
 
@@ -12,19 +13,21 @@ class MySQLModel extends Model {
     const INDEX = 'id';
     const COLLECTION = 'model';
 
-    public static function find( $query ) {
+    public static function find( $query = null ) {
     	$db = MySQLConnector::getInstance( static::DB );
 
     	$conds = [];
         $binds = [];
         $i = 0;
 
-    	foreach ( $query['where'] as $key => $val ) {
-    		if ( in_array( $key, static::$_fields ) ) {
-    			$sql = $key . ' = :val' . $i;
-                $binds['val' . $i] = $val;
-    			$conds[] = $sql;
-    		}
+        if ( is_array( $query ) && !empty( $query['where'] ) ) {
+        	foreach ( $query['where'] as $key => $val ) {
+        		if ( in_array( $key, static::$_fields ) ) {
+        			$sql = $key . ' = :val' . $i;
+                    $binds['val' . $i] = $val;
+        			$conds[] = $sql;
+        		}
+            }
         }
 
 		if ( empty( $conds ) ) {
@@ -32,14 +35,15 @@ class MySQLModel extends Model {
 		}
 
     	$sql = "SELECT * FROM " . static::COLLECTION . " WHERE " . implode( ' AND ', $conds );
-    	if ( isset( $query['limit'] ) ) {
+    	if ( !empty( $query['limit'] ) ) {
     		$sql .= ' LIMIT ' . $query['limit'];
     	}
 
     	$result = $db->query( $sql, $binds );
 
+        $modelClass = static::CLASSNAME;
     	while ( $row = $db->getNext( $result ) ) {
-    		$res[] = $row;
+    		$res[] = Container::$modelClass($row);
     	}
 
     	return $res;

@@ -58,3 +58,11 @@ angular.module('app').filter('prettyJSON', function () {
     }
     return prettyPrintJson;
 });
+
+angular.module('app').filter('idfy', function () {
+    function idfy(text) {
+
+      return text.replace(/\/+/g, '_');
+    }
+    return idfy;
+});

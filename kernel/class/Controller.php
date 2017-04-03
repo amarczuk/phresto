@@ -2,6 +2,8 @@
 
 namespace Phresto;
 
+use Phresto\View;
+
 class Controller {
 
 	const CLASSNAME = __CLASS__;
@@ -80,6 +82,102 @@ class Controller {
 
 	protected function auth() {
 		return true;
+	}
+
+	/**
+	* prints controller description
+	* @return object
+	*/
+	protected function discover_get() {
+		return View::jsonResponse( static::discover() );
+	}
+
+	protected static function getParameters( $method, $className ) {
+		return $method->getParameters();
+	}
+
+	public static function discover( $className = null ) {
+
+		$hasParam = function( $params, $field ) {
+			foreach ($params as $param) {
+				$name = ( is_object($param) ) ? $param->name : $param;
+				if ($name == $field) return true;
+			}
+
+			return false;
+		};
+
+		$getDescription = function( $desc ) {
+			return trim( preg_replace ( ['$^[\s]*/\*\*$isU', '$[\s]*\*\/$isU', '$[\s]*\*[\s]*$isU'], ['', '', "\n"], $desc ) );
+		};
+
+		$reflection = new \ReflectionClass( static::CLASSNAME );
+
+		$requestTypes = [ 'get', 'post', 'patch', 'put', 'delete', 'head' ];
+		$endpoints = [];
+		
+		$tmp = explode( '\\', ( isset( $className ) ) ? $className : static::CLASSNAME );
+		$classNameOnly = array_pop( $tmp );
+
+		$classMethods = $reflection->getMethods( \ReflectionMethod::IS_PUBLIC + \ReflectionMethod::IS_PROTECTED );
+		$staticProps = $reflection->getDefaultProperties(); 
+		$fields = $staticProps['routeMapping'];
+
+		foreach ( $classMethods as $method ) {
+			if ( !in_array( $method->name, $requestTypes ) && 
+				 !( strpos( $method->name, '_' ) !== false && 
+				 	in_array( substr( $method->name, strpos( $method->name, '_' ) + 1 ), $requestTypes )
+				  )
+				) continue;
+
+			$describe = [ 'name' => $method->name, 'urlparams' => [], 'params' => [] ];
+			$params = static::getParameters( $method, $className );
+			$ignore = [];
+
+			$routeMapping = ( is_array($fields[$method->name] ) ) ? $fields[$method->name] : $fields;
+			$values = array_values($routeMapping);
+			if ( is_array($values[0] ) ) $routeMapping = [];
+
+			foreach ( $routeMapping as $field => $index ) {
+				if ( $hasParam($params, $field) ) {
+					$describe['urlparams'][$index] = $field;
+					$ignore[] = $field;
+				}
+			}
+
+			foreach ( $params as $param ) {
+				$name = ( is_object($param) ) ? $param->name : $param;
+				if ( in_array($name, $ignore ) ) continue;
+				$describe['params'][] = $name;
+			}
+
+			$methodName = $method->name;
+			if ( strpos( $method->name, '_' ) !== false ) {
+				list($methodName, $reqType) = explode('_', $methodName);
+			}
+
+			$endpoint = $classNameOnly;
+			if ( isset( $reqType ) ) {
+				$endpoint .= '/' . $methodName;
+				$methodName = $reqType;
+			}
+
+			if ( !is_array( $endpoints[$endpoint] ) ) {
+				$endpoints[$endpoint] = ['endpoint' => $endpoint, 'methods' => [], 'description' => ''];
+				if ( !isset( $reqType ) ) {
+					$endpoints[$endpoint]['description'] = $getDescription( $reflection->getDocComment() );
+				}
+			}
+
+			$describe['description'] = $getDescription( $method->getDocComment() );
+			$describe['name'] = $methodName;
+			unset($reqType);
+			unset($methodName);
+
+			$endpoints[$endpoint]['methods'][] = $describe;
+		}
+
+		return array_values( $endpoints );
 	}
 
 }

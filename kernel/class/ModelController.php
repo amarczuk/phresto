@@ -9,12 +9,13 @@ class ModelController extends Controller {
 
 	const CLASSNAME = __CLASS__;
 
-	protected $routeMapping = [ 'id' => 0, 'model' => 1 ];
+	protected $routeMapping = [ 'id' => 0 ];
 
 	protected $modelName;
 	protected $contextModel;
 
 	public function __construct( $modelName, $reqType, $route, $body, $bodyRaw, $query, $headers, Model $contextModel = null ) {
+		$this->routeMapping['model'] = 1;
 		$this->modelName = $modelName;
 		$this->contextModel = $contextModel;
 		parent::__construct( $reqType, $route, $body, $bodyRaw, $query, $headers );
@@ -41,7 +42,32 @@ class ModelController extends Controller {
 		return $modelContr->exec();
 	}
 
-	protected function head( $id = null, Model $model = null ) {	
+	protected static function getParameters( $method, $className ) {
+		$params = $method->getParameters();
+
+		if ( in_array( $method->name, ['post', 'put', 'patch'] ) ) {
+			$reflection = new \ReflectionClass( $className );
+			$staticProps = $reflection->getStaticProperties(); 
+			$params = array_merge( $params, $staticProps['_fields'] );
+		}
+
+		return $params;
+	}
+
+	/**
+	* prints model description
+	* @return object
+	*/
+	protected function discover_get() {
+		return View::jsonResponse( static::discover( $this->modelName ) );
+	}
+
+	/**
+	* check if element exists
+	* @param id element's index
+	* @return 200 - OK, 404 - not found
+	*/
+	protected function head( $id = null ) {	
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );
 		}
@@ -54,17 +80,15 @@ class ModelController extends Controller {
 		return null;
 	}
 
-	protected function get( $id = null, Model $model = null ) {
+	/**
+	* get element
+	* @param id element's index (all if empty)
+	* @return object / array of objects
+	*/
+	protected function get( $id = null ) {
 		if ( empty( $id ) ) {
-			if ( empty( $this->contextModel ) ) {
-				throw new RequestException( '404' );
-			}
 			$modelName = $this->modelName;
-			return View::jsonResponse( $modelName::findRelated( $this->contextModel ) );
-		}
-
-		if ( !empty( $model ) ) {
-			return $this->escalate( $id, $model );
+			return View::jsonResponse( $modelName::find() );
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
@@ -74,26 +98,26 @@ class ModelController extends Controller {
 		return View::jsonResponse( $modelInstance );
 	}
 
-	protected function post( $id = null, $model = null ) {
-		if ( !empty( $id ) ) {
-			if ( !empty( $model ) ) {
-				return $this->escalate( $id, $model );
-			}
-			throw new RequestException( '409' );
-		}
-
+	/**
+	* create element
+	* @param model properties
+	* @return object created element
+	*/
+	protected function post() {
 		$modelInstance = Container::{$this->modelName}( $this->body );
 		$modelInstance->save();
 		return View::jsonResponse( $modelInstance );		
 	}
 
-	protected function patch( $id = null, $model = null ) {
+	/**
+	* update element
+	* @param id of updated element
+	* @param model properties
+	* @return object updated element
+	*/
+	protected function patch( $id = null ) {
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );
-		}
-
-		if ( !empty( $model ) ) {
-			return $this->escalate( $id, $model );
 		}
 
 		if ( empty( $this->body ) ) {
@@ -109,6 +133,12 @@ class ModelController extends Controller {
 		return View::jsonResponse( $modelInstance );
 	}
 
+	/**
+	* upsert element
+	* @param id (optional)
+	* @param model properties to be updated
+	* @return object updated element
+	*/
 	protected function put( $id = null, $model = null ) {
 		if ( !empty( $id ) && !empty( $model ) ) {
 			return $this->escalate( $id, $model );
@@ -124,6 +154,11 @@ class ModelController extends Controller {
 		return View::jsonResponse( $modelInstance );
 	}
 
+	/**
+	* delete element
+	* @param id
+	* @return object deleted element
+	*/
 	protected function delete( $id = null, $model = null ) {
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );

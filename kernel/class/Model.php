@@ -26,17 +26,17 @@ class Model implements ModelInterface, \JsonSerializable {
         
         if ( is_array( $option ) && isset( $option['where'] ) ) {
             $option['limit'] = 1;
-            $this->set( self::find( $option )[0] );
+            $this->setObject( self::find( $option )[0] );
             return;
         }
         
         if ( is_array( $option ) ) {
-            $this->set( $modelArray );
+            $this->set( $option );
             return;
         }
 
         if ( is_object( $option ) ) {
-            $this->setObject( $model );
+            $this->setObject( $option );
             return;
         }
 
@@ -74,7 +74,7 @@ class Model implements ModelInterface, \JsonSerializable {
     }
 
     protected function getById( $id ) {
-        $this->set( static::find( [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] )[0] );
+        $this->setObject( static::find( [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] )[0] );
     }
 
     public function update( $modelArray ) {
@@ -95,7 +95,7 @@ class Model implements ModelInterface, \JsonSerializable {
     		}
     	}
 
-        if ( isset( $this->_properties[static::INDEX] ) ) $this->_new = false;
+        if ( !empty( $this->_properties[static::INDEX] ) ) $this->_new = false;
     }
 
     protected function setObject( $model ) {
@@ -106,7 +106,7 @@ class Model implements ModelInterface, \JsonSerializable {
             }
         }
 
-        if ( isset( $this->_properties[static::INDEX] ) ) $this->_new = false;
+        if ( !empty( $this->_properties[static::INDEX] ) ) $this->_new = false;
     }
 
     public static function find( $query ) {

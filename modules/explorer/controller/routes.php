@@ -2,6 +2,7 @@
 
 namespace Phresto\Modules\Controller;
 use Phresto\Controller;
+use Phresto\ModelController;
 use Phresto\Config;
 use Phresto\View;
 
@@ -15,88 +16,25 @@ class routes extends Controller {
 		$controllers = [];
 
 		foreach ( $modules as $modname => $module ) {
-			if ( !empty( $module['Controller'] ) ) {
+			if ( is_array( $module['Controller'] ) ) {
 				foreach ( $module['Controller'] as $file ) {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;
-					$endpoints[] = $name;
-					array_push($controllers, [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'controller', 'Phresto\\Modules\\Controller\\' . $name ) ]);
+					$class = '\\Phresto\\Modules\\Controller\\' . $name;
+					$discovery = $class::discover();
+					$controllers = array_merge( $controllers, $discovery );
 				}
 			}
 
-			if ( !empty( $module['Model'] ) ) {
+			if ( is_array( $module['Model'] ) ) {
 				foreach ( $module['Model'] as $file ) {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;
-					$endpoints[] = $name;
-					array_push($controllers, [ 'module' => $modname, 'endpoint' => $name, 'methods' => $this->getMethods( 'model', 'Phresto\\Modules\\Model\\' . $name ) ]);
+					$class = '\\Phresto\\Modules\\Model\\' . $name;
+					$controllers = array_merge( $controllers, ModelController::discover( $class ) );
 				}
 			}
 		}
-		return View::jsonResponse( [ 'controllers' => $controllers ] );
-	}
-
-	private function hasParam( $params, $field ) {
-		foreach ($params as $param) {
-			if ($param->name == $field) return true;
-		}
-
-		return false;
-	}
-
-	private function getMethods( $type, $class ) {
-		$reflection = new \ReflectionClass( $class );
-
-		$requestTypes = [ 'get' => ['id'], 'post' => [], 'patch' => ['id'], 'put' => ['id'], 'delete' => ['id'], 'head' => ['id'] ];
-		$withBody = [ 'post', 'patch', 'put' ];
-		$methods = [];
-
-			
-		if ( $type == 'model' ) {
-			$staticProps = $reflection->getStaticProperties(); 
-			$fields = $staticProps['_fields'];
-			foreach ( $requestTypes as $request => $params ) {
-				if ( !array_key_exists( $request, $methods ) ) {
-					$bodyparams = ( in_array( $request, $withBody ) ) ? $fields : [];
-
-					$methods[] = [ 'name' => $request, 'urlparams' => $params, 'params' => $bodyparams ];
-				}
-			}
-
-			return $methods;
-		}
-		
-		$classMethods = $reflection->getMethods( \ReflectionMethod::IS_PUBLIC );
-		$staticProps = $reflection->getDefaultProperties(); 
-		$fields = $staticProps['routeMapping'];
-
-		foreach ( $classMethods as $method ) {
-
-			if ( !array_key_exists( $method->name, $requestTypes ) ) continue;
-
-			$describe = [ 'name' => $method->name, 'urlparams' => [] ];
-			$params = $method->getParameters();
-			$ignore = [];
-
-			$routeMapping = ( is_array($fields[$method->name] ) ) ? $fields[$method->name] : $fields;
-			$values = array_values($routeMapping);
-			if ( is_array($values[0] ) ) $routeMapping = [];
-
-			foreach ( $routeMapping as $field => $index ) {
-				if ( $this->hasParam($params, $field) ) {
-					$describe['urlparams'][$index] = $field;
-					$ignore[] = $field;
-				}
-			}
-
-			foreach ( $params as $param ) {
-				if ( in_array($param->name, $ignore ) ) continue;
-				$describe['params'][] = $param->name;
-			}
-
-			$methods[] = $describe;
-		}
-
-		return $methods;
+		return View::jsonResponse( $controllers );
 	}
 }
