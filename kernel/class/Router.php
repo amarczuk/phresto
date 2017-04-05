@@ -3,6 +3,7 @@
 namespace Phresto;
 
 use Phresto\View;
+use Phresto\Config;
 
 class Router {
 
@@ -35,8 +36,11 @@ class Router {
 	    }
 
 		if ( empty( $class ) ) {
-        	if ( class_exists( 'Phresto\\Modules\\Controller\\Main' ) ) {
-        		$instance = Container::{'Phresto\\Modules\\Controller\\Main'}( $reqType, $route, $body, $bodyRaw, $query, $headers );
+			$viewConf = Config::getConfig( 'view' );
+        	if ( is_array( $viewConf['page'] ) &&
+        		 !empty( $viewConf['page']['main'] ) &&
+        		 class_exists( 'Phresto\\Modules\\Controller\\' . $viewConf['page']['main'] ) ) {
+        		$instance = Container::{'Phresto\\Modules\\Controller\\' . $viewConf['page']['main']}( $reqType, $route, $body, $bodyRaw, $query, $headers );
         	} else if ( file_exists( 'static/index.html' ) ) {
         		return file_get_contents( 'static/index.html' );
         	} else {

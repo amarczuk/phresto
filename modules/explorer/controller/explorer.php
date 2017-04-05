@@ -2,13 +2,22 @@
 
 namespace Phresto\Modules\Controller;
 use Phresto\Controller;
+use Phresto\ModelController;
+use Phresto\Config;
 use Phresto\View;
 
+/** 
+* Tool to make testing your application easier
+*/
 class explorer extends Controller {
 
 	const CLASSNAME = __CLASS__;
 	protected $routeMapping = [ 'post' => [ 'a' => 0, 'b' => 2, 'd' => 1 ] ];
 
+	/** 
+	* returns explorer's UI
+	* @return html
+	*/
 	public function get() {
 		$view = View::getView( 'main', 'explorer' );
 		$view->add( 'main', [], 'explorer' );
@@ -16,17 +25,36 @@ class explorer extends Controller {
 		return $view->get();
 	}
 
-	/**
-	* @param int $a
+	/** 
+	* returns all routes available in the app
+	* @return json
 	*/
-	public function post( $a, $b, $c = "def", $d = 123 ) {
-		return View::jsonResponse([$a,$b,$c,$d]);
-	}
+	public function routes_get() {
+		$modules = Config::getConfig( 'modules' );
+		$endpoints = [];
+		$controllers = [];
 
-	/**
-	* @param int $a
-	*/
-	public function test_get() {
-		return View::jsonResponse(['a'=>'b']);
+		foreach ( $modules as $modname => $module ) {
+			if ( $modname == 'main' ) continue;
+			if ( is_array( $module['Controller'] ) ) {
+				foreach ( $module['Controller'] as $file ) {
+					$name = str_replace( '.php', '', $file );
+					if ( in_array( $name, $endpoints ) ) continue;
+					$class = '\\Phresto\\Modules\\Controller\\' . $name;
+					$discovery = $class::discover();
+					$controllers = array_merge( $controllers, $discovery );
+				}
+			}
+
+			if ( is_array( $module['Model'] ) ) {
+				foreach ( $module['Model'] as $file ) {
+					$name = str_replace( '.php', '', $file );
+					if ( in_array( $name, $endpoints ) ) continue;
+					$class = '\\Phresto\\Modules\\Model\\' . $name;
+					$controllers = array_merge( $controllers, ModelController::discover( $class ) );
+				}
+			}
+		}
+		return View::jsonResponse( $controllers );
 	}
 }

@@ -56,6 +56,10 @@ class Model implements ModelInterface, \JsonSerializable {
         return static::INDEX;
     }
 
+    public static function isRelated( $modelName ) {
+        return array_key_exists( $modelName, static::$_relations );
+    }
+
     public function setIndex( $id ) {
         $this->_properties[static::INDEX] = $id;
         $this->_new = false;

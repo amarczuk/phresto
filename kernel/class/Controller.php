@@ -137,13 +137,15 @@ class Controller {
 			$routeMapping = ( is_array($fields[$method->name] ) ) ? $fields[$method->name] : $fields;
 			$values = array_values($routeMapping);
 			if ( is_array($values[0] ) ) $routeMapping = [];
-
+			asort( $routeMapping );
 			foreach ( $routeMapping as $field => $index ) {
 				if ( $hasParam($params, $field) ) {
 					$describe['urlparams'][$index] = $field;
 					$ignore[] = $field;
 				}
 			}
+
+			$describe['urlparams'] = array_values( $describe['urlparams'] );
 
 			foreach ( $params as $param ) {
 				$name = ( is_object($param) ) ? $param->name : $param;

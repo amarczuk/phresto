@@ -30,7 +30,7 @@ angular.module('app', ['mm.foundation']).controller(
           });
       }
 
-      phresto.get('routes')
+      phresto.get('explorer/routes')
         .then(function(routes) {
           $scope.$apply(function() {
             $scope.routes = routes;

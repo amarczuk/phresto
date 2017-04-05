@@ -12,5 +12,9 @@ try {
 	$response = Phresto\Router::routeException( 500, $e->getMessage(), $e->getTrace() );
 }
 
-header( 'Content-Type: ' . $response['content-type'] );
-echo $response['body'];
+if ( is_array( $response ) ) {
+	header( 'Content-Type: ' . $response['content-type'] );
+	echo $response['body'];
+} else {
+	echo $response;
+}
