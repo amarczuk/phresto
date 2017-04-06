@@ -11,6 +11,11 @@ class Utils {
 		$path = explode( '\\', trim( $className, '\\' ) );
 		$modules = Config::getConfig( 'modules' );
 
+		if ( empty( $modules ) ) {
+			self::updateModules();
+			$modules = Config::getConfig( 'modules' );
+		}
+
 		if ( $path[0] != 'Phresto' ) return;
 		if ( in_array( $path[1], [ 'Interf', 'Exception' ] ) ) {
 			$file = $base . 'kernel/' . mb_strtolower( $path[1] ) . '/' . $path[2] . '.php';
@@ -49,6 +54,29 @@ class Utils {
         } else {
             header( "Refresh: {$delay}; url={$url}" );
         }
+    }
+
+    public static function updateModules() {
+    	$getFiles = function( $base, $flag = 0 ) {
+			return array_map( function( $elem ) use ( $base, $flag ) { return str_replace( $base, '', $elem ); }, glob( $base . '*', $flag ) );
+		};
+
+		$base = __DIR__ . '/../../modules/';
+		$modules = $getFiles( $base, GLOB_ONLYDIR );
+
+		$types = ['Controller', 'Model', 'class', 'Interf'];
+
+		$config = [];
+
+		foreach ( $modules as $module ) {
+			foreach ( $types as $type ) {
+				$files = $getFiles( $base . $module . '/' . $type . '/' );
+				$config[$module][$type] = $files;
+			}
+		}
+
+
+		Config::saveConfig( 'modules', $config );
     }
     
 }
