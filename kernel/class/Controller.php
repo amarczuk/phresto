@@ -31,7 +31,19 @@ class Controller {
 		}
 	}
 
-	public function exec() {
+	protected function getRouteMapping( $reqType ) {
+		if ( is_array( $this->routeMapping[$reqType] ) ) {
+			return $this->routeMapping[$reqType];
+		}
+
+		if ( is_array( $this->routeMapping['all'] ) ) {
+			return $this->routeMapping['all'];
+		}
+
+		return [];
+	}
+
+	protected function getMethod() {
 		$reflection = new \ReflectionClass( static::CLASSNAME );
 
 		if ( !empty($this->route[0]) && $reflection->hasMethod( $this->route[0] . '_' . $this->reqType ) ) {
@@ -45,22 +57,26 @@ class Controller {
 
 		$params = $method->getParameters();
 		$args = [];
+		$routeMapping = $this->getRouteMapping( $method->name );
 		foreach ( $params as $param ) {
-			if ( isset( $this->body[$param->name] ) ) {
+			if ( !empty( $routeMapping ) && isset( $routeMapping[$param->name] ) && isset( $this->route[$routeMapping[$param->name]] ) && $this->route[$routeMapping[$param->name]] != '') {
+				$args[] = $this->getParamValue( $param, $this->route[$routeMapping[$param->name]] );
+			} else if ( isset( $this->body[$param->name] ) ) {
 				$args[] = $this->getParamValue( $param, $this->body[$param->name] );
 			} else if ( isset( $this->query[$param->name] ) ) {
 				$args[] = $this->getParamValue( $param, $this->query[$param->name] );
-			} else if ( isset( $this->routeMapping[$param->name] ) && isset( $this->route[$this->routeMapping[$param->name]] ) && $this->route[$this->routeMapping[$param->name]] != '') {
-				$args[] = $this->getParamValue( $param, $this->route[$this->routeMapping[$param->name]] );
-			} else if ( isset( $this->routeMapping[$this->reqType] ) && isset( $this->routeMapping[$this->reqType][$param->name] ) && isset( $this->route[$this->routeMapping[$this->reqType][$param->name]] ) && $this->route[$this->routeMapping[$this->reqType][$param->name]] != '') {
-				$args[] = $this->getParamValue( $param, $this->route[$this->routeMapping[$this->reqType][$param->name]] );
-			} else if ( $param->isDefaultValueAvailable() ) {
+			} else  if ( $param->isDefaultValueAvailable() ) {
 				$args[] = $param->getDefaultValue();
 			} else {
 				$args[] = null;
 			}
 		}
 
+		return [ $method, $args ];
+	}
+
+	public function exec() {
+		list( $method, $args ) = $this->getMethod();
 		$method->setAccessible( true );
 		return $method->invokeArgs( $this, $args );
 	}
@@ -134,14 +150,17 @@ class Controller {
 			$params = static::getParameters( $method, $className );
 			$ignore = [];
 
-			$routeMapping = ( is_array($fields[$method->name] ) ) ? $fields[$method->name] : $fields;
-			$values = array_values($routeMapping);
-			if ( is_array($values[0] ) ) $routeMapping = [];
-			asort( $routeMapping );
-			foreach ( $routeMapping as $field => $index ) {
-				if ( $hasParam($params, $field) ) {
-					$describe['urlparams'][$index] = $field;
-					$ignore[] = $field;
+			$routeMapping = ( is_array( $fields[$method->name] ) ) ? $fields[$method->name] : ( is_array( $fields['all'] ) ) ? $fields['all'] : [];
+			
+			if ( !empty( $routeMapping ) ) {
+				$values = array_values($routeMapping);
+				if ( is_array($values[0] ) ) $routeMapping = [];
+				asort( $routeMapping );
+				foreach ( $routeMapping as $field => $index ) {
+					if ( $hasParam($params, $field) ) {
+						$describe['urlparams'][$index] = $field;
+						$ignore[] = $field;
+					}
 				}
 			}
 

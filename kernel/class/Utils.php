@@ -13,7 +13,7 @@ class Utils {
 
 		if ( $path[0] != 'Phresto' ) return;
 		if ( in_array( $path[1], [ 'Interf', 'Exception' ] ) ) {
-			$file = $base . 'kernel/' . $path[1] . '/' . $path[2] . '.php';
+			$file = $base . 'kernel/' . mb_strtolower( $path[1] ) . '/' . $path[2] . '.php';
 		} else if ( $path[1] == 'Modules' ) {
 
 			foreach ( $modules as $module => $files ) {

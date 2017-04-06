@@ -2,8 +2,10 @@
 
 require_once __DIR__ . '/../kernel/class/Utils.php';
 
+Phresto\Utils::registerAutoload();
+
 function getFiles( $base, $flag = 0 ) {
-	return array_map( function( $elem ) use ( $base ) { return str_replace( $base, '', $elem ); }, glob( $base . '*', $flag ) );
+	return array_map( function( $elem ) use ( $base, $flag ) { return str_replace( $base, '', $elem ); }, glob( $base . '*', $flag ) );
 }
 
 $base = __DIR__ . '/../modules/';

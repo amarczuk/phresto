@@ -35,14 +35,15 @@ class explorer extends Controller {
 		$controllers = [];
 
 		foreach ( $modules as $modname => $module ) {
-			if ( $modname == 'main' ) continue;
 			if ( is_array( $module['Controller'] ) ) {
 				foreach ( $module['Controller'] as $file ) {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;
+
 					$class = '\\Phresto\\Modules\\Controller\\' . $name;
-					$discovery = $class::discover();
-					$controllers = array_merge( $controllers, $discovery );
+					if ( !class_exists( $class ) ) continue;
+
+					$controllers = array_merge( $controllers, $class::discover() );
 				}
 			}
 
@@ -50,11 +51,15 @@ class explorer extends Controller {
 				foreach ( $module['Model'] as $file ) {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;
+
 					$class = '\\Phresto\\Modules\\Model\\' . $name;
+					if ( !class_exists( $class ) ) continue;
+
 					$controllers = array_merge( $controllers, ModelController::discover( $class ) );
 				}
 			}
 		}
+		
 		return View::jsonResponse( $controllers );
 	}
 }

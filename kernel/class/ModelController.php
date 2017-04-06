@@ -9,10 +9,11 @@ class ModelController extends Controller {
 
 	const CLASSNAME = __CLASS__;
 
-	protected $routeMapping = [ 'id' => 0 ];
+	protected $routeMapping = [ 'all' => [ 'id' => 0 ] ];
 
 	protected $modelName;
 	protected $contextModel;
+	protected $methodName;
 
 	public function __construct( $modelName, $reqType, $route, $body, $bodyRaw, $query, $headers, Model $contextModel = null ) {
 		$this->modelName = $modelName;
@@ -21,12 +22,16 @@ class ModelController extends Controller {
 	}
 
 	public function exec() {
+		list( $method, $args ) = $this->getMethod();
+		$this->methodName = $method->name;
+
 		if ( $this->hasNextRoute() ) {
 			$route = $this->getNextRoute();
 			return $this->escalate( ( !empty( $this->route[0] ) ) ? $this->route[0] : 0, $route[0] );
 		}
 
-		return parent::exec();
+		$method->setAccessible( true );
+		return $method->invokeArgs( $this, $args );
 	}
 
 	protected function auth() {
@@ -35,12 +40,12 @@ class ModelController extends Controller {
 	}
 
 	protected function hasNextRoute() {
-		$routeMapping = ( is_array( $this->routeMapping[$this->reqType] ) ) ? $this->routeMapping[$this->reqType] : $this->routeMapping;
+		$routeMapping = $this->getRouteMapping( $this->methodName );
 		return count( $routeMapping ) < count( $this->route );
 	}
 
 	protected function getNextRoute() {
-		$routeMapping = ( is_array( $this->routeMapping[$this->reqType] ) ) ? $this->routeMapping[$this->reqType] : $this->routeMapping;
+		$routeMapping = $this->getRouteMapping( $this->methodName );
 		$cnt = count( $routeMapping );
 		$route = $this->route;
 		for ( $i = 0; $i < $cnt; $i++ ) {
