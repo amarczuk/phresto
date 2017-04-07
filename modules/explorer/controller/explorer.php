@@ -12,7 +12,7 @@ use Phresto\View;
 class explorer extends Controller {
 
 	const CLASSNAME = __CLASS__;
-	protected $routeMapping = [ 'post' => [ 'a' => 0, 'b' => 2, 'd' => 1 ] ];
+	protected $routeMapping = [];
 
 	/** 
 	* returns explorer's UI
@@ -59,7 +59,7 @@ class explorer extends Controller {
 				}
 			}
 		}
-		
+
 		return View::jsonResponse( $controllers );
 	}
 }

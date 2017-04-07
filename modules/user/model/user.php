@@ -12,6 +12,14 @@ class user extends MySQLModel {
     const COLLECTION = 'user';
 
     protected static $_fields = [ 'id', 'email', 'pass', 'name', 'nick', 'date_payment', 'status', 'date_added', 'date_logged' ];
+    protected static $_relations = [
+        'token' => [
+            'type' => '1:n',
+            'model' => 'token',
+            'field' => 'user',
+            'index' => 'id'
+        ]
+    ];
 
     protected function filterJson( $fields ) {
     	$fields['pass'] = '*********';

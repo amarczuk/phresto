@@ -86,7 +86,6 @@ class MySQLModel extends Model {
         $bind = [ 'index' => $this->_properties[static::INDEX] ];
         $db->query( $sql, $bind );
         
-        $this->getEmpty();
         return true;
     }
 

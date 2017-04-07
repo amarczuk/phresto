@@ -13,7 +13,9 @@ class Model implements ModelInterface, \JsonSerializable {
     const COLLECTION = 'model';
     
     protected $_properties = [];
-	protected static $_fields = [];
+    protected $_initial = [];
+    protected static $_fields = [];
+	protected static $_defaults = [];
     protected static $_relations = [];
     protected $_new = true;
 
@@ -21,31 +23,20 @@ class Model implements ModelInterface, \JsonSerializable {
         
         if ( empty( $option ) ) {
             $this->getEmpty();
-            return;
-        }
-        
-        if ( is_array( $option ) && isset( $option['where'] ) ) {
+        } else if ( is_array( $option ) && isset( $option['where'] ) ) {
             $option['limit'] = 1;
             $this->setObject( self::find( $option )[0] );
-            return;
-        }
-        
-        if ( is_array( $option ) ) {
+        } else if ( is_array( $option ) ) {
             $this->set( $option );
-            return;
-        }
-
-        if ( is_object( $option ) ) {
+        } else if ( is_object( $option ) ) {
             $this->setObject( $option );
-            return;
-        }
-
-        if ( is_string( $option ) && !is_numeric( $option) && $json = json_decode( $option, true ) ) {
+        } else if ( is_string( $option ) && !is_numeric( $option) && $json = json_decode( $option, true ) ) {
             $this->set( $json );
-            return;
+        } else {
+            $this->getById( $option );
         }
 
-        $this->getById( $option );
+        $this->_initial = $this->_properties;
     }
 
     public static function auth( $reqType ) {
@@ -135,10 +126,30 @@ class Model implements ModelInterface, \JsonSerializable {
         return true;
     }
 
+    protected function saveAfter() {
+        return true;
+    }
+
+    protected function saveSetDefaults() {
+        if ( !$this->_new ) return true;
+        foreach ( static::$_defaults as $key => $value ) {
+            if ( empty( $this->$key ) ) {
+                if ( empty( $value ) && method_exists( $this, 'default_' . $key ) ) {
+                    $this->$key = $this->{'default_' . $key}();
+                } else {
+                    $this->$key = $value;
+                }
+            }
+        }
+    }
+
     public function save() {
+        $this->saveSetDefaults();
     	$this->saveFilter();
         $this->saveValidate();
         $this->saveRecord();
+        $this->_initial = $this->_properties;
+        $this->saveAfter();
     }
 
     protected function deleteValidate() {
@@ -149,9 +160,17 @@ class Model implements ModelInterface, \JsonSerializable {
         return true;
     }
 
+    protected function deleteAfter() {
+        return true;
+    }
+
     public function delete() {
     	$this->deleteValidate();
         $this->deleteRecord();
+        $this->_properties[static::INDEX] = null;
+        $this->_initial = $this->_properties;
+        $this->_new = true;
+        $this->deleteAfter();
     }
 
     public function getIndexValue() {

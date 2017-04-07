@@ -88,8 +88,8 @@ class ModelController extends Controller {
 	}
 
 	/**
-	* check if element exists
-	* @param id element's index
+	* check if record exists
+	* @param id record's index
 	* @return 200 - OK, 404 - not found
 	*/
 	protected function head( $id = null ) {	
@@ -106,8 +106,8 @@ class ModelController extends Controller {
 	}
 
 	/**
-	* get element
-	* @param id element's index (all if empty)
+	* get record
+	* @param id record's index (all if empty)
 	* @return object / array of objects
 	*/
 	protected function get( $id = null ) {
@@ -124,9 +124,9 @@ class ModelController extends Controller {
 	}
 
 	/**
-	* create element
-	* @param model properties
-	* @return object created element
+	* create record
+	* @param json model properties
+	* @return object created record
 	*/
 	protected function post() {
 		$modelInstance = Container::{$this->modelName}( $this->body );
@@ -135,10 +135,10 @@ class ModelController extends Controller {
 	}
 
 	/**
-	* update element
-	* @param id of updated element
-	* @param model properties
-	* @return object updated element
+	* update record
+	* @param id id of record to update
+	* @param json model properties
+	* @return object updated record
 	*/
 	protected function patch( $id = null ) {
 		if ( empty( $id ) ) {
@@ -159,9 +159,10 @@ class ModelController extends Controller {
 	}
 
 	/**
-	* upsert element
+	* upsert record
 	* @param id (optional)
-	* @return object updated element
+	* @param json model properties
+	* @return object updated record
 	*/
 	protected function put( $id = null ) {
 		if ( empty( $this->body ) ) {
@@ -175,9 +176,9 @@ class ModelController extends Controller {
 	}
 
 	/**
-	* delete element
+	* delete record
 	* @param id
-	* @return object deleted element
+	* @return object deleted record
 	*/
 	protected function delete( $id = null ) {
 		if ( empty( $id ) ) {
@@ -185,11 +186,12 @@ class ModelController extends Controller {
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
+		
 		if ( empty( $modelInstance->id ) ) {
 			throw new RequestException( '404' );
 		}
-		$oldModel = View::jsonResponse( $modelInstance );
+
 		$modelInstance->delete();
-		return $oldModel;
+		return View::jsonResponse( $modelInstance );
 	}
 }
