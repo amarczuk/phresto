@@ -23,6 +23,19 @@ class Config {
         return self::$configCache[ $path ];
     }
 
+    public static function delConfig( $name, $module = null ) {
+        $path = self::getPath( $name, $module );
+        if ( !is_file( $path ) && !empty( $module ) ) {
+            $path = self::getPath( $name );
+        }
+
+        if ( !is_file( $path ) ) return false;
+
+        unlink( $path );
+        return true;
+
+    }
+
     public static function mergeConfigs(array &$config, array &$config2) {
         $merged = $config;
         foreach ($config2 as $key => &$value)

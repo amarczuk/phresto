@@ -40,6 +40,7 @@ class explorer extends Controller {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;
 
+					array_push( $endpoints, $name );
 					$class = '\\Phresto\\Modules\\Controller\\' . $name;
 					if ( !class_exists( $class ) ) continue;
 
@@ -52,6 +53,7 @@ class explorer extends Controller {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;
 
+					array_push( $endpoints, $name );
 					$class = '\\Phresto\\Modules\\Model\\' . $name;
 					if ( !class_exists( $class ) ) continue;
 

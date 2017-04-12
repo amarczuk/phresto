@@ -3,6 +3,7 @@
 namespace Phresto;
 use Phresto\Model;
 use Phresto\Container;
+use Phresto\Exception\RequestException;
 
 class MySQLModel extends Model {
 
@@ -13,31 +14,66 @@ class MySQLModel extends Model {
     const INDEX = 'id';
     const COLLECTION = 'model';
 
-    public static function find( $query = null ) {
-    	$db = MySQLConnector::getInstance( static::DB );
-
-    	$conds = [];
+    protected static function getConds( $query = null, $prefix = '' ) {
+        $conds = [];
         $binds = [];
         $i = 0;
 
         if ( is_array( $query ) && !empty( $query['where'] ) ) {
-        	foreach ( $query['where'] as $key => $val ) {
-        		if ( in_array( $key, static::$_fields ) ) {
-        			$sql = $key . ' = :val' . $i;
+            foreach ( $query['where'] as $key => $val ) {
+                if ( in_array( $key, static::$_fields ) ) {
+                    $sql = $prefix . $key . ' = :val' . $i;
                     $binds['val' . $i] = $val;
-        			$conds[] = $sql;
-        		}
+                    $conds[] = $sql;
+                }
             }
         }
 
-		if ( empty( $conds ) ) {
-			$conds = [ '1' ];
-		}
+        if ( empty( $conds ) ) {
+            $conds = [ '1' ];
+        }
 
-    	$sql = "SELECT * FROM " . static::COLLECTION . " WHERE " . implode( ' AND ', $conds );
-    	if ( !empty( $query['limit'] ) ) {
-    		$sql .= ' LIMIT ' . $query['limit'];
-    	}
+        return [ $conds, $binds ];
+    }
+
+    protected static function extendQuery( $query = null, $prefix = '' ) {
+        $sql = '';
+
+        if ( is_array( $query['order'] ) ) {
+            $sql .= ' ORDER BY ' . $prefix . implode( ', ' . $prefix . $query['order'] );
+        }
+
+        if ( !empty( $query['limit'] ) ) {
+            $sql .= ' LIMIT ' . $query['limit'];
+        }
+
+        if ( !empty( $query['offset'] ) ) {
+            $sql .= ' OFFSET ' . $query['offset'];
+        }
+
+        return $sql;
+    }
+
+    public static function find( $query = null ) {
+    	$db = MySQLConnector::getInstance( static::DB );
+
+    	list( $conds, $binds ) = static::getConds( $query );
+
+        $fields = '*';
+        if ( is_array( $query['fields'] ) ) {
+            if ( !in_array( static::INDEX, $query['fields'] ) ) {
+                array_unshift( $query['fields'], static::INDEX );
+            }
+            $fields = implode( ', ', $query['fields'] );
+        }
+
+    	$sql = "SELECT {$fields} FROM " . static::COLLECTION . " WHERE " . implode( ' AND ', $conds );
+    	
+        if ( !empty( $query['order'] ) && !is_array( $query['order'] ) ) {
+            $query['order'] = [ $query['order'] ];
+        }
+
+        $sql .= static::extendQuery( $query );
 
     	$result = $db->query( $sql, $binds );
 
@@ -49,9 +85,48 @@ class MySQLModel extends Model {
     	return $res;
     }
 
-    public static function findRelated( $model, $query = null ) {
-        $class = static::CLASSNAME;
-        return [ new $class() ];
+    public static function findRelated( Model $model, $query = null ) {
+        if ( !static::isRelated( $model->getName() ) || empty( $model->getIndex() ) ) {
+            throw new RequestException( 400 );
+        }
+
+        $db = MySQLConnector::getInstance( static::DB );
+        $relation = static::getRelation( $model->getName() );
+        list( $conds, $binds ) = static::getConds( $query, 'm.' );
+
+        $fields = 'm.*';
+        if ( is_array( $query['fields'] ) ) {
+            if ( !in_array( static::INDEX, $query['fields'] ) ) {
+                array_unshift( $query['fields'], static::INDEX );
+            }
+            $fields = 'm.' . implode( ', m.', $query['fields'] );
+        }
+
+        switch ( $relation['type'] ) {
+            case '1:1':
+            case '1:n':
+            case 'n:1':
+                $conds[] = 'm.' . $relation['index'] . ' = r.' . $relation['field'];
+                $conds[] = 'r.' . $relation['field'] . ' = :mfield';
+                $binds['mfield'] = $model->getIndex();
+                $sql = "SELECT {$fields} FROM " . static::COLLECTION . " m, " . $model->getCollection() . " r
+                 WHERE " . implode( ' AND ', $conds );
+                $sql .= ( $relation['type'] == '1:n') ? " GROUP BY m." . static::INDEX : '';
+                break;
+            case 'n:n':
+                break;
+        }
+        
+        $sql .= static::extendQuery( $query, 'm.' );
+
+        $result = $db->query( $sql, $binds );
+
+        $modelClass = static::CLASSNAME;
+        while ( $row = $db->getNext( $result ) ) {
+            $res[] = Container::$modelClass($row);
+        }
+
+        return $res;
     }
 
     protected function saveRecord() {

@@ -43,6 +43,10 @@ class Utils {
 	}
 
 	public static function registerAutoload() {
+		$app = Config::getConfig( 'app' );
+		if ( $app['app']['env'] == 'dev' ) {
+			Config::delConfig( 'modules' );
+		}
 		spl_autoload_register( 'Phresto\\Utils::autoload' );
 	}
 

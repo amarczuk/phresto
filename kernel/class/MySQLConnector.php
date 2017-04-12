@@ -18,7 +18,7 @@ class MySQLConnector extends DBConnector
         if ( !empty( $options['names'] ) ) {
             $db->query( "SET NAMES utf8" );
         } else {
-            $db->query( "SET NAMES " . $this->escape( $options['name']) );
+            $db->query( "SET NAMES " . $this->escape( $options['names']) );
         }
 
         return $db;

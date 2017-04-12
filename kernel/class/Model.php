@@ -14,8 +14,30 @@ class Model implements ModelInterface, \JsonSerializable {
     
     protected $_properties = [];
     protected $_initial = [];
+    /**
+    * array of the model field names (as in db)
+    */
     protected static $_fields = [];
+    /**
+    * array default field values (['field_name' => 'default value'])
+    * if value should be calculated during runtime leave value empty and
+    * add protected function `default_field_name()` returning default value
+    */
 	protected static $_defaults = [];
+    /**
+    * array describes model relations:
+    * 'model_name' => [ // key is the related model name
+    *        'type' => '1:n', // 1:1, 1:n, n:1, n:n - first model second related model
+    *        'model' => 'model_name', // related model name
+    *        'field' => 'field_in_related_model',  // name of the FK in related model
+    *        'index' => 'id', // index (FK) in the model
+    *        'junction' => [ // junction table description for n:n relations
+    *           'collection' => 'junction_table', // junction table name
+    *           'field' => 'related_model_fk', // related model FK
+    *           'index' => 'model_fk' // model FK
+    *        ]
+    *    ]
+    */
     protected static $_relations = [];
     protected $_new = true;
 
@@ -33,7 +55,7 @@ class Model implements ModelInterface, \JsonSerializable {
         } else if ( is_string( $option ) && !is_numeric( $option) && $json = json_decode( $option, true ) ) {
             $this->set( $json );
         } else {
-            $this->getById( $option );
+            $this->setById( $option );
         }
 
         $this->_initial = $this->_properties;
@@ -47,8 +69,20 @@ class Model implements ModelInterface, \JsonSerializable {
         return static::INDEX;
     }
 
+    public static function getName() {
+        return static::NAME;
+    }
+
+    public static function getCollection() {
+        return static::COLLECTION;
+    }
+
     public static function isRelated( $modelName ) {
         return array_key_exists( $modelName, static::$_relations );
+    }
+
+    public static function getRelation( $modelName ) {
+        return static::$_relations[$modelName];
     }
 
     public function setIndex( $id ) {
@@ -68,8 +102,12 @@ class Model implements ModelInterface, \JsonSerializable {
     	$this->_new = true;
     }
 
-    protected function getById( $id ) {
+    public function setById( $id ) {
         $this->setObject( static::find( [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] )[0] );
+    }
+
+    public function setRelatedById( $model, $id ) {
+        $this->setObject( static::findRelated( $model, [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] )[0] );
     }
 
     public function update( $modelArray ) {
@@ -109,7 +147,7 @@ class Model implements ModelInterface, \JsonSerializable {
         return [ new $class() ];
     }
 
-    public static function findRelated( $model, $query = null ) {
+    public static function findRelated( Model $model, $query = null ) {
     	$class = static::CLASSNAME;
         return [ new $class() ];
     }
@@ -173,7 +211,7 @@ class Model implements ModelInterface, \JsonSerializable {
         $this->deleteAfter();
     }
 
-    public function getIndexValue() {
+    public function getIndex() {
         if ( isset( $this->_properties[static::INDEX] ) ) {
             return $this->_properties[static::INDEX];
         }

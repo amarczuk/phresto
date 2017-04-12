@@ -36,11 +36,11 @@ class Router {
 	    }
 
 		if ( empty( $class ) ) {
-			$viewConf = Config::getConfig( 'view' );
-        	if ( is_array( $viewConf['page'] ) &&
-        		 !empty( $viewConf['page']['main'] ) &&
-        		 class_exists( 'Phresto\\Modules\\Controller\\' . $viewConf['page']['main'] ) ) {
-        		$instance = Container::{'Phresto\\Modules\\Controller\\' . $viewConf['page']['main']}( $reqType, $route, $body, $bodyRaw, $query, $headers );
+			$viewConf = Config::getConfig( 'app' );
+        	if ( is_array( $viewConf['app'] ) &&
+        		 !empty( $viewConf['app']['mainmodule'] ) &&
+        		 class_exists( 'Phresto\\Modules\\Controller\\' . $viewConf['app']['mainmodule'] ) ) {
+        		$instance = Container::{'Phresto\\Modules\\Controller\\' . $viewConf['app']['mainmodule']}( $reqType, $route, $body, $bodyRaw, $query, $headers );
         	} else if ( file_exists( 'static/index.html' ) ) {
         		return file_get_contents( 'static/index.html' );
         	} else {

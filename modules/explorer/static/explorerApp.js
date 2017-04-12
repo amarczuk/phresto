@@ -13,6 +13,7 @@ angular.module('app', ['mm.foundation']).controller(
         for(var idx in method.url) {
           url += '/' + method.url[idx];
         }
+        url += '?' + method.query
         if (!phresto[method.name]) return;
         $scope.loading = true;
         phresto[method.name](url, method.body)

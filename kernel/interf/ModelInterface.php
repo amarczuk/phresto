@@ -1,13 +1,14 @@
 <?php
 
 namespace Phresto\Interf;
+use Phresto\Model;
 
 interface ModelInterface {
 
 	public function __construct( $option = null );
 
 	public static function find( $query );
-	public static function findRelated( $model, $query = null );
+	public static function findRelated( Model $model, $query = null );
 	public static function auth( $reqType );
 
 	public function save();
@@ -16,7 +17,7 @@ interface ModelInterface {
 
 	public static function getIndexField();
 	public static function getFields();
-	public function getIndexValue();
+	public function getIndex();
 
 	public function __set( $name, $value );
 	public function __get( $name );

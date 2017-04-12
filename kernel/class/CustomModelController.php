@@ -2,88 +2,22 @@
 
 namespace Phresto;
 use Phresto\Controller;
+use Phresto\ModelController;
 use Phresto\View;
 use Phresto\Exception\RequestException;
 
-class ModelController extends Controller {
+class CustomModelController extends ModelController {
 
 	const CLASSNAME = __CLASS__;
+	const MODELCLASS = 'Phresto\\Module\\Model\\Name';
 
-	protected $routeMapping = [ 'all' => [ 'id' => 0 ] ];
-
-	protected $modelName;
-	protected $contextModel;
-	protected $methodName;
-
-	public function __construct( $modelName, $reqType, $route, $body, $bodyRaw, $query, $headers, Model $contextModel = null ) {
-		$this->modelName = $modelName;
-		$this->contextModel = $contextModel;
-		parent::__construct( $reqType, $route, $body, $bodyRaw, $query, $headers );
-	}
-
-	public function exec() {
-		list( $method, $args ) = $this->getMethod();
-		$this->methodName = $method->name;
-
-		if ( $this->hasNextRoute() ) {
-			$route = $this->getNextRoute();
-			return $this->escalate( ( !empty( $this->route[0] ) ) ? $this->route[0] : 0, $route[0] );
-		}
-
-		$method->setAccessible( true );
-		return $method->invokeArgs( $this, $args );
-	}
-
-	protected function auth() {
-		$model = $this->modelName;
-		return $model::auth( $reqType );
-	}
-
-	protected function hasNextRoute() {
-		$routeMapping = $this->getRouteMapping( $this->methodName );
-		return count( $routeMapping ) < count( $this->route );
-	}
-
-	protected function getNextRoute() {
-		$routeMapping = $this->getRouteMapping( $this->methodName );
-		$cnt = count( $routeMapping );
-		$route = $this->route;
-		for ( $i = 0; $i < $cnt; $i++ ) {
-			array_shift( $route );
-		}
-		return $route;
-	}
-
-	protected function escalate( $id, $model ) {
-		$thisModel = Container::{$this->modelName}();
-		if ( !empty( $this->contextModel ) ) {
-			$thisModel->setRelatedById( $this->contextModel, $id );
-		} else {
-			$thisModel->setById( $id );
-		}
-
-		$thisModelName = $this->modelName;
-		if ( !$thisModel->getIndex() || !$thisModelName::isRelated( $model ) ) {
-			throw new RequestException( 404 );
-		}
-
-		$modelClass = 'Phresto\\Modules\\Model\\' . $model;
-		$newRoute = $this->getNextRoute();
-		array_shift( $newRoute );
-		$modelContr = Container::{'Phresto\\ModelController'}( $modelClass, $this->reqType, $newRoute, $this->body, $this->bodyRaw, $this->query, $this->headers, $thisModel );
-		return $modelContr->exec();
+	public function __construct( $reqType, $route, $body, $bodyRaw, $query, $headers ) {
+		$this->modelName = static::MODELCLASS;
+		parent::__construct( static::MODELCLASS, $reqType, $route, $body, $bodyRaw, $query, $headers );
 	}
 
 	protected static function getParameters( $method, $className ) {
-		$params = $method->getParameters();
-
-		if ( in_array( $method->name, ['post', 'put', 'patch'] ) ) {
-			$reflection = new \ReflectionClass( $className );
-			$staticProps = $reflection->getStaticProperties(); 
-			$params = array_merge( $params, $staticProps['_fields'] );
-		}
-
-		return $params;
+		return parent::getParameters( $method, static::MODELCLASS );
 	}
 
 	/**
@@ -164,10 +98,6 @@ class ModelController extends Controller {
 	* @return object updated record
 	*/
 	protected function patch( $id = null ) {
-		if ( !empty( $this->contextModel ) ) {
-			throw new RequestException( '400' );
-		}
-
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );
 		}
@@ -192,10 +122,6 @@ class ModelController extends Controller {
 	* @return object updated record
 	*/
 	protected function put( $id = null ) {
-		if ( !empty( $this->contextModel ) ) {
-			throw new RequestException( '400' );
-		}
-
 		if ( empty( $this->body ) ) {
 			throw new RequestException( '204' );
 		}
