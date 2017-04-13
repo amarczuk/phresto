@@ -39,8 +39,12 @@ class MySQLModel extends Model {
     protected static function extendQuery( $query = null, $prefix = '' ) {
         $sql = '';
 
-        if ( is_array( $query['order'] ) ) {
-            $sql .= ' ORDER BY ' . $prefix . implode( ', ' . $prefix . $query['order'] );
+        if ( !empty( $query['order'] ) && !is_array( $query['order'] ) ) {
+            $query['order'] = [ $query['order'] ];
+        }
+
+        if ( isset( $query['order'] ) && is_array( $query['order'] ) ) {
+            $sql .= ' ORDER BY ' . $prefix . implode( ', ' . $prefix, $query['order'] );
         }
 
         if ( !empty( $query['limit'] ) ) {
@@ -60,7 +64,7 @@ class MySQLModel extends Model {
     	list( $conds, $binds ) = static::getConds( $query );
 
         $fields = '*';
-        if ( is_array( $query['fields'] ) ) {
+        if ( isset( $query['fields'] ) && is_array( $query['fields'] ) ) {
             if ( !in_array( static::INDEX, $query['fields'] ) ) {
                 array_unshift( $query['fields'], static::INDEX );
             }
@@ -69,10 +73,6 @@ class MySQLModel extends Model {
 
     	$sql = "SELECT {$fields} FROM " . static::COLLECTION . " WHERE " . implode( ' AND ', $conds );
     	
-        if ( !empty( $query['order'] ) && !is_array( $query['order'] ) ) {
-            $query['order'] = [ $query['order'] ];
-        }
-
         $sql .= static::extendQuery( $query );
 
     	$result = $db->query( $sql, $binds );
@@ -148,7 +148,7 @@ class MySQLModel extends Model {
 
     	if ( $this->_new ) {
     		$this->_new = false;
-    		$this->getById( $db->getLastId() );
+    		$this->setById( $db->getLastId() );
     	}
 
     	return true;

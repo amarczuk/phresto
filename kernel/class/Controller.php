@@ -32,11 +32,11 @@ class Controller {
 	}
 
 	protected function getRouteMapping( $reqType ) {
-		if ( is_array( $this->routeMapping[$reqType] ) ) {
+		if ( isset( $this->routeMapping[$reqType] ) && is_array( $this->routeMapping[$reqType] ) ) {
 			return $this->routeMapping[$reqType];
 		}
 
-		if ( is_array( $this->routeMapping['all'] ) ) {
+		if ( isset( $this->routeMapping['all'] ) && is_array( $this->routeMapping['all'] ) ) {
 			return $this->routeMapping['all'];
 		}
 
@@ -150,11 +150,11 @@ class Controller {
 			$params = static::getParameters( $method, $className );
 			$ignore = [];
 
-			$routeMapping = ( is_array( $fields[$method->name] ) ) ? $fields[$method->name] : ( is_array( $fields['all'] ) ) ? $fields['all'] : [];
+			$routeMapping = ( isset( $fields[$method->name] ) && is_array( $fields[$method->name] ) ) ? $fields[$method->name] : ( isset( $fields['all'] ) && is_array( $fields['all'] ) ) ? $fields['all'] : [];
 			
 			if ( !empty( $routeMapping ) ) {
-				$values = array_values($routeMapping);
-				if ( is_array($values[0] ) ) $routeMapping = [];
+				$values = array_values( $routeMapping );
+				if ( isset( $values[0] ) && is_array( $values[0] ) ) $routeMapping = [];
 				asort( $routeMapping );
 				foreach ( $routeMapping as $field => $index ) {
 					if ( $hasParam($params, $field) ) {
@@ -183,7 +183,7 @@ class Controller {
 				$methodName = $reqType;
 			}
 
-			if ( !is_array( $endpoints[$endpoint] ) ) {
+			if ( empty( $endpoints[$endpoint] ) ) {
 				$endpoints[$endpoint] = ['endpoint' => $endpoint, 'methods' => [], 'description' => ''];
 				if ( !isset( $reqType ) ) {
 					$endpoints[$endpoint]['description'] = $getDescription( $reflection->getDocComment() );

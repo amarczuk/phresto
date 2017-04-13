@@ -14,6 +14,7 @@ class Model implements ModelInterface, \JsonSerializable {
     
     protected $_properties = [];
     protected $_initial = [];
+    protected $_debug = '';
     /**
     * array of the model field names (as in db)
     */
@@ -220,12 +221,20 @@ class Model implements ModelInterface, \JsonSerializable {
     }
 
     public function __set( $name, $value ) {
+        if ( $name == '_debug_' ) {
+            return $this->_debug = $value;
+        }
+
     	if ( in_array( $name, static::$_fields ) ) {
     		$this->_properties[$name] = $value;
     	}
     }
 
     public function __get( $name ) {
+        if ( $name == '_debug_' ) {
+            return $this->_debug;
+        }
+
     	if ( in_array( $name, static::$_fields ) && isset( $this->_properties[$name] ) ) {
     		return $this->_properties[$name];
     	}
@@ -234,7 +243,8 @@ class Model implements ModelInterface, \JsonSerializable {
     }
 
     public function __isset( $name ) {
-    	return ( in_array( $name, static::$_fields ) && isset( $this->_properties[$name] ) );
+        $debug = ( $name == '_debug_' && !empty( $this->_debug ) );
+    	return ( $debug || ( in_array( $name, static::$_fields ) && isset( $this->_properties[$name] ) ) );
     	
     }
 
@@ -243,7 +253,11 @@ class Model implements ModelInterface, \JsonSerializable {
     }
 
     public function jsonSerialize() {
-        return $this->filterJson( $this->_properties );
+        $fields = $this->filterJson( $this->_properties );
+        if ( !empty( $this->_debug ) ) {
+            $fields['_debug_'] = $this->_debug;
+        }
+        return $fields;
     }
 
 }

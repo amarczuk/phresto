@@ -36,7 +36,7 @@ class ModelController extends Controller {
 
 	protected function auth() {
 		$model = $this->modelName;
-		return $model::auth( $reqType );
+		return $model::auth( $this->reqType );
 	}
 
 	protected function hasNextRoute() {

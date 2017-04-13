@@ -15,6 +15,19 @@ class View {
     private $flush_no = 0;
 
     public static function jsonResponse( $response ) {
+    	$debug = ob_get_contents();
+		ob_clean();
+		$conf = Config::getConfig('app');
+		if ( !empty( $debug ) && !empty( $conf['app'] ) && !empty( $conf['app']['debug'] ) && $conf['app'] = 'on' ) {
+			if ( Utils::is_assoc_array( $response ) ) {
+				$response['_debug_'] = $debug;
+			} else if ( is_object( $response ) ) {
+				$response->_debug_ = $debug;
+			} else if ( is_array( $response ) ) {
+				$response[] = [ '_debug_' => $debug ];
+			}
+		}
+
     	return [ 'body' => json_encode( $response, JSON_PRETTY_PRINT ), 'content-type' => 'application/json' ];
     }
 
@@ -26,8 +39,9 @@ class View {
 
 	public function __construct( $module = null ) {
 		$this->config = Config::getConfig( 'view', $module );
-		if (is_array($this->config['view']) && $this->config['view']['inherit'] == 'yes') {
-			$this->config = Config::mergeConfigs( Config::getConfig( 'view' ), $this->config );
+		if ( isset( $this->config['view'] ) && is_array( $this->config['view'] ) && isset( $this->config['view']['inherit'] ) && $this->config['view']['inherit'] == 'yes') {
+			$viewconf = Config::getConfig( 'view' );
+			$this->config = Config::mergeConfigs( $viewconf, $this->config );
 		}
 		if ( empty( self::$lang ) ) {
 			self::$lang = $this->config['page']['lang'];
@@ -174,6 +188,16 @@ class View {
 		}
 		
 		$out .= $this->closingJS();
+
+		$debug = ob_get_contents();
+		ob_clean();
+		$conf = Config::getConfig('app');
+
+		if ( !empty( $debug ) && !empty( $conf['app'] ) && !empty( $conf['app']['debug'] ) && $conf['app'] = 'on' ) {
+			$debug = str_replace( '<', '&lt;', $debug );
+			$out .= "\n\n<div class='phrestoDebug'>{$debug}</div>\n\n";
+		}
+
 		$out .= "\n\n</body>\n\n</html>";
 		$out = $this->remove_utf8_bom( $out );
 
@@ -230,7 +254,7 @@ class View {
 	
 	public static function render( $element ) {
 		
-		if ( $element['inline'] ) {
+		if ( !empty( $element['inline'] ) ) {
 			$data = $element['content'];			
 		} else {
 			$data = file_get_contents( $element['file'] );
@@ -472,19 +496,19 @@ class View {
 		$head .= "\t<title>{$this->config['page']['title']}</title>\n";
 		$head .= "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset={$this->config['page']['charset']}\">\n";
 		
-		if ( is_array( $this->config['cache'] ) ) {
+		if ( isset( $this->config['cache'] ) && is_array( $this->config['cache'] ) ) {
 			foreach( $this->config['cache'] as $key => $var ) {
 				$head .= "\t<meta http-equiv=\"{$key}\" content=\"{$var}\">\n";
 			}
 		}
 		
-		if ( is_array( $this->config['headers'] ) ) {
+		if ( isset( $this->config['headers'] ) && is_array( $this->config['headers'] ) ) {
 			foreach( $this->config['headers'] as $key => $var ) {
 				$head.="\t<meta name=\"{$key}\" content=\"{$var}\">\n";
 			}
 		}
 		
-		if ( is_array( $this->config['rss'] ) ) {
+		if ( isset( $this->config['rss'] ) && is_array( $this->config['rss'] ) ) {
 		    foreach ( $this->config['rss'] as $file => $title ) {
                 $head.="\t<link rel=\"alternate\" type=\"application/rss+xml\" title=\"{$title}\" href=\"/{$file}\">\n";
 		    }
@@ -494,7 +518,7 @@ class View {
 			$head.="\t<link rel=\"icon\" href=\"/{$this->config['page']['favicon']}\" type=\"image/x-icon\">\n";
 		}
 
-		if ( is_array( $this->config['css'] ) ) {
+		if ( isset( $this->config['css'] ) && is_array( $this->config['css'] ) ) {
 		    foreach ( $this->config['css'] as $key => $val ) {
 				$head.="\t<link rel=\"stylesheet\" href=\"{$val}\" type=\"text/css\">\n";
 			}
@@ -516,7 +540,7 @@ class View {
 			}
 		}
 	
-		if ( is_array( $this->config['js'] ) ) {
+		if ( isset( $this->config['js'] ) && is_array( $this->config['js'] ) ) {
 		    foreach ( $this->config['js'] as $key => $val ) {
 				$head.="\t<script type='text/javascript' src=\"{$val}\"></script>\n";
 			}
@@ -538,7 +562,7 @@ class View {
 			}
 		}
 		
-		if ( is_array( $this->config['customhead'] ) ) {
+		if ( isset( $this->config['customhead'] ) && is_array( $this->config['customhead'] ) ) {
 			foreach( $this->config['customhead'] as $key => $var)
 			{
 				$head .= "\n{$var}\n";
@@ -546,7 +570,7 @@ class View {
 		}
 		
 		$head .= "\n</head>\n<body";
-		if ( is_array( $this->config['body'] ) ) {
+		if ( isset( $this->config['body'] ) && is_array( $this->config['body'] ) ) {
 			foreach( $this->config['body'] as $key => $var)
 			{
 				$head .= "\n\t{$key}=\"{$var}\"";

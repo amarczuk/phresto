@@ -13,7 +13,7 @@ class DBConnector implements DBConnectorInterface
     protected $connection;
 
     public static function getInstance( $name, $options = null ) {
-        if ( static::$dbs[$name] ) {
+        if ( !empty( static::$dbs[$name] ) ) {
             return static::$dbs[$name];
         }
 

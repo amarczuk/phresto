@@ -35,7 +35,7 @@ class explorer extends Controller {
 		$controllers = [];
 
 		foreach ( $modules as $modname => $module ) {
-			if ( is_array( $module['Controller'] ) ) {
+			if ( isset( $module['Controller'] ) && is_array( $module['Controller'] ) ) {
 				foreach ( $module['Controller'] as $file ) {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;
@@ -48,7 +48,7 @@ class explorer extends Controller {
 				}
 			}
 
-			if ( is_array( $module['Model'] ) ) {
+			if ( isset( $module['Model'] ) && is_array( $module['Model'] ) ) {
 				foreach ( $module['Model'] as $file ) {
 					$name = str_replace( '.php', '', $file );
 					if ( in_array( $name, $endpoints ) ) continue;

@@ -82,5 +82,10 @@ class Utils {
 
 		Config::saveConfig( 'modules', $config );
     }
+
+    public static function is_assoc_array( $arr ) {
+    	if ( !isset( $arr ) || !is_array( $arr ) ) return false;
+    	return array_keys($arr) !== range(0, count($arr) - 1);
+    }
     
 }
