@@ -19,6 +19,7 @@ class View {
 		ob_clean();
 		$conf = Config::getConfig('app');
 		if ( !empty( $debug ) && !empty( $conf['app'] ) && !empty( $conf['app']['debug'] ) && $conf['app'] = 'on' ) {
+			$debug = explode( "\n", trim( $debug ) );
 			if ( Utils::is_assoc_array( $response ) ) {
 				$response['_debug_'] = $debug;
 			} else if ( is_object( $response ) ) {

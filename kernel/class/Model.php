@@ -254,6 +254,11 @@ class Model implements ModelInterface, \JsonSerializable {
 
     public function jsonSerialize() {
         $fields = $this->filterJson( $this->_properties );
+        foreach ( $fields as $key => $value ) {
+            if ( $value instanceof \DateTime ) {
+                $fields[$key] = $value->format( \DateTime::ISO8601 );
+            }
+        }
         if ( !empty( $this->_debug ) ) {
             $fields['_debug_'] = $this->_debug;
         }

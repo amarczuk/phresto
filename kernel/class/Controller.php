@@ -82,18 +82,38 @@ class Controller {
 	}
 
 	protected function getParamValue(\ReflectionParameter $param, $value) {
-		if ( defined( PHP_MAJOR_VERSION ) && PHP_MAJOR_VERSION >= 7) {
-			if ( $param->hasType() ) {
-				$type = $param->getType();
-				if ( $type == 'boolean' && $value == 'false' ) {
-					$value = false;
-				} else {
-					settype( $value, $param->getType() );
-				}
+		$type = $this->getParamType( $param );
+
+		if ( $type ) {
+			if ( class_exists( $type ) ) {
+				$value = new $type( $value );
+			} else if ( class_exists( '\\' . $type ) ) {
+				$type = '\\' . $type;
+				$value = new $type( $value );
+			} else if ( $type == 'boolean' && $value == 'false' ) {
+				$value = false;
+			} else {
+				settype( $value, $type );
 			}
 		}
-		// TODO: maybe use doc comment to get types in PHP5?
 		return $value;
+	}
+
+	/**
+	 * @param ReflectionParameter $parameter
+	 * @return string|null
+	 */
+	protected function getParamType( \ReflectionParameter $parameter ) {
+	    $export = \ReflectionParameter::export(
+	        [
+	            $parameter->getDeclaringClass()->name,
+	            $parameter->getDeclaringFunction()->name
+	        ],
+	        $parameter->name,
+	        true
+	    );
+
+	    return preg_match('/[>] ([\\\\A-z]+) /', $export, $matches) ? $matches[1] : null;
 	}
 
 	protected function auth() {
