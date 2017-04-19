@@ -37,7 +37,7 @@ class Utils {
 			$file = $base . '/kernel/class/' . $path[1] . '.php';
 		}
 
-		if ( file_exists( $file ) ) {
+		if ( !empty( $file ) && file_exists( $file ) ) {
 			require_once( $file );
 		}
 	}

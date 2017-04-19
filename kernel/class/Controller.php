@@ -82,7 +82,7 @@ class Controller {
 	}
 
 	protected function getParamValue(\ReflectionParameter $param, $value) {
-		$type = $this->getParamType( $param );
+		$type = static::getParamType( $param );
 
 		if ( $type ) {
 			if ( class_exists( $type ) ) {
@@ -96,6 +96,7 @@ class Controller {
 				settype( $value, $type );
 			}
 		}
+
 		return $value;
 	}
 
@@ -103,7 +104,7 @@ class Controller {
 	 * @param ReflectionParameter $parameter
 	 * @return string|null
 	 */
-	protected function getParamType( \ReflectionParameter $parameter ) {
+	protected static function getParamType( \ReflectionParameter $parameter ) {
 	    $export = \ReflectionParameter::export(
 	        [
 	            $parameter->getDeclaringClass()->name,
@@ -136,8 +137,7 @@ class Controller {
 
 		$hasParam = function( $params, $field ) {
 			foreach ($params as $param) {
-				$name = ( is_object($param) ) ? $param->name : $param;
-				if ($name == $field) return true;
+				if ( is_object($param) && $param->name == $field) return true;
 			}
 
 			return false;
@@ -187,9 +187,9 @@ class Controller {
 			$describe['urlparams'] = array_values( $describe['urlparams'] );
 
 			foreach ( $params as $param ) {
-				$name = ( is_object($param) ) ? $param->name : $param;
-				if ( in_array($name, $ignore ) ) continue;
-				$describe['params'][] = $name;
+				$paramWithType = ( is_object($param) ) ? [ 'name' => $param->name, 'type' => static::getParamType($param) ] : $param;
+				if ( in_array( $paramWithType['name'], $ignore ) ) continue;
+				$describe['params'][] = $paramWithType;
 			}
 
 			$methodName = $method->name;

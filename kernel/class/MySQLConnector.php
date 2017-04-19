@@ -52,6 +52,14 @@ class MySQLConnector extends DBConnector
             return $var;
         }
 
+        if ( is_object( $var ) && $var instanceof \DateTime ) {
+            return "'" . $var->format( \DateTime::ISO8601 ) . "'";
+        }
+
+        if ( is_object( $var ) || is_array( $var ) ) {
+            return "'" . json_encode( $var ) . "'";
+        }
+
         throw new DBException( "Provided type is not supported" );
         
     }

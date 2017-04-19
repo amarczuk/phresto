@@ -15,16 +15,25 @@ class Model implements ModelInterface, \JsonSerializable {
     protected $_properties = [];
     protected $_initial = [];
     protected $_debug = '';
+    protected $_new = true;
+
     /**
-    * array of the model field names (as in db)
+    * array of the model field names (as in db) and types
+    * [
+    *   'id' => 'int',
+    *   'name' => 'string',
+    *   'created' => 'DateTime'
+    * ]
     */
     protected static $_fields = [];
+
     /**
     * array default field values (['field_name' => 'default value'])
     * if value should be calculated during runtime leave value empty and
     * add protected function `default_field_name()` returning default value
     */
 	protected static $_defaults = [];
+
     /**
     * array describes model relations:
     * 'model_name' => [ // key is the related model name
@@ -40,7 +49,6 @@ class Model implements ModelInterface, \JsonSerializable {
     *    ]
     */
     protected static $_relations = [];
-    protected $_new = true;
 
     public function __construct( $option = null ) {
         
@@ -53,7 +61,7 @@ class Model implements ModelInterface, \JsonSerializable {
             $this->set( $option );
         } else if ( is_object( $option ) ) {
             $this->setObject( $option );
-        } else if ( is_string( $option ) && !is_numeric( $option) && $json = json_decode( $option, true ) ) {
+        } else if ( is_string( $option ) && !is_numeric( $option ) && $json = json_decode( $option, true ) ) {
             $this->set( $json );
         } else {
             $this->setById( $option );
@@ -92,12 +100,16 @@ class Model implements ModelInterface, \JsonSerializable {
     }
 
     public static function getFields() {
+        return array_keys( static::$_fields );
+    }
+
+    public static function getFieldsAndTypes() {
         return static::$_fields;
     }
 
     protected function getEmpty() {
     	$this->_properties = [];
-    	foreach( static::$_fields as $field ) {
+    	foreach( static::$_fields as $field => $type ) {
     		$this->_properties[$field] = '';
     	}
     	$this->_new = true;
@@ -112,9 +124,9 @@ class Model implements ModelInterface, \JsonSerializable {
     }
 
     public function update( $modelArray ) {
-        foreach( static::$_fields as $field ) {
+        foreach( static::$_fields as $field => $type ) {
             if ( isset( $modelArray[$field] ) ) {
-                $this->_properties[$field] = $modelArray[$field];
+                $this->$field = $modelArray[$field];
             }
         }
 
@@ -123,9 +135,9 @@ class Model implements ModelInterface, \JsonSerializable {
 
     protected function set( $modelArray ) {
     	$this->_properties = [];
-    	foreach( static::$_fields as $field ) {
+    	foreach( static::$_fields as $field => $type ) {
     		if ( isset( $modelArray[$field] ) ) {
-    			$this->_properties[$field] = $modelArray[$field];
+    			$this->$field = $modelArray[$field];
     		}
     	}
 
@@ -134,9 +146,9 @@ class Model implements ModelInterface, \JsonSerializable {
 
     protected function setObject( $model ) {
         $this->_properties = [];
-        foreach( static::$_fields as $field ) {
+        foreach( static::$_fields as $field => $type ) {
             if ( isset( $model->$field ) ) {
-                $this->_properties[$field] = $model->$field;
+                $this->$field = $model->$field;
             }
         }
 
@@ -225,8 +237,8 @@ class Model implements ModelInterface, \JsonSerializable {
             return $this->_debug = $value;
         }
 
-    	if ( in_array( $name, static::$_fields ) ) {
-    		$this->_properties[$name] = $value;
+    	if ( array_key_exists( $name, static::$_fields ) ) {
+    		$this->_properties[$name] = $this->getTyped( $name, $value );
     	}
     }
 
@@ -235,21 +247,54 @@ class Model implements ModelInterface, \JsonSerializable {
             return $this->_debug;
         }
 
-    	if ( in_array( $name, static::$_fields ) && isset( $this->_properties[$name] ) ) {
-    		return $this->_properties[$name];
-    	}
-
-        return null;
+    	return $this->getTyped( $name );
     }
 
     public function __isset( $name ) {
         $debug = ( $name == '_debug_' && !empty( $this->_debug ) );
-    	return ( $debug || ( in_array( $name, static::$_fields ) && isset( $this->_properties[$name] ) ) );
+    	return ( $debug || ( array_key_exists( $name, static::$_fields ) && isset( $this->_properties[$name] ) ) );
     	
     }
 
     protected function filterJson( $fields ) {
         return $fields;
+    }
+
+    protected function getUniType( $type ) {
+        switch ( $type ) {
+            case 'bool':
+                return 'boolean';
+            case 'int':
+                return 'integer';
+            case 'float':
+                return 'double';
+            default:
+                return $type;
+        }
+    }
+
+    protected function getTyped( $name, $value = null ) {
+        if ( array_key_exists( $name, static::$_fields ) ) {
+            if ( $value === null && isset( $this->_properties[$name] ) ) {
+                $value = $this->_properties[$name];
+            }
+
+            $type = $this->getUniType( static::$_fields[$name] );
+            if ( class_exists( $type ) ) {
+                if ( !is_a( $value, $type ) ) $value = new $type( $value );
+            } else if ( class_exists( '\\' . $type ) ) {
+                if ( !is_a( $value, '\\' . $type ) ) {
+                    $type = '\\' . $type;
+                    $value = new $type( $value );
+                }
+            } else if ( $type == 'boolean' && $value == 'false' ) {
+                $value = false;
+            } else if ( gettype( $value ) != $type ) {
+                settype( $value, $type );
+            }
+        }
+
+        return $value;
     }
 
     public function jsonSerialize() {

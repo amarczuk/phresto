@@ -80,7 +80,11 @@ class ModelController extends Controller {
 		if ( in_array( $method->name, ['post', 'put', 'patch'] ) ) {
 			$reflection = new \ReflectionClass( $className );
 			$staticProps = $reflection->getStaticProperties(); 
-			$params = array_merge( $params, $staticProps['_fields'] );
+			$modelFields = $staticProps['_fields'];
+			foreach ( $modelFields as $key => $value) {
+				$params[] = [ 'name' => $key, 'type' => $value ];
+			}
+
 		}
 
 		return $params;

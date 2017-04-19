@@ -21,7 +21,7 @@ class MySQLModel extends Model {
 
         if ( is_array( $query ) && !empty( $query['where'] ) ) {
             foreach ( $query['where'] as $key => $val ) {
-                if ( in_array( $key, static::$_fields ) ) {
+                if ( array_key_exists( $key, static::$_fields ) ) {
                     $sql = $prefix . $key . ' = :val' . $i;
                     $binds['val' . $i] = $val;
                     $conds[] = $sql;
@@ -123,7 +123,7 @@ class MySQLModel extends Model {
 
         $modelClass = static::CLASSNAME;
         while ( $row = $db->getNext( $result ) ) {
-            $res[] = Container::$modelClass($row);
+            $res[] = Container::$modelClass( $row );
         }
 
         return $res;
@@ -140,8 +140,8 @@ class MySQLModel extends Model {
     		$sql = "UPDATE " . static::COLLECTION . " SET " . implode( ', ', $fields );
     		$sql .= " WHERE " . static::INDEX . " = :" . static::INDEX . " LIMIT 1";
     	} else {
-    		$sql = "INSERT INTO " . static::COLLECTION . " ( `" . implode( '`, `', static::$_fields ) . "` ) ";
-    		$sql .= "VALUES ( " . implode( ', :', static::$_fields ) . " )";
+    		$sql = "INSERT INTO " . static::COLLECTION . " ( `" . implode( '`, `', static::getFields() ) . "` ) ";
+    		$sql .= "VALUES ( " . implode( ', :', static::getFields() ) . " )";
     	}
 
     	$db->query( $sql, $this->_properties );

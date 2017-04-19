@@ -11,7 +11,16 @@ class user extends MySQLModel {
     const INDEX = 'id';
     const COLLECTION = 'user';
 
-    protected static $_fields = [ 'id', 'email', 'pass', 'name', 'nick', 'date_payment', 'status', 'date_added', 'date_logged' ];
+    protected static $_fields = [ 'id' => 'int', 
+                                  'email' => 'string', 
+                                  'pass' => 'string', 
+                                  'name' => 'string', 
+                                  'nick' => 'string', 
+                                  'date_payment' => 'int', 
+                                  'status' => 'int', 
+                                  'date_added' => 'int', 
+                                  'date_logged' => 'int' 
+                                ];
     protected static $_relations = [
         'token' => [
             'type' => '1:n',

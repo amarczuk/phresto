@@ -44,8 +44,8 @@
 	  								<legend>request parameters</legend>
 
 	  								<label ng-repeat="param in method.params">
-										{{param}}
-										<textarea ng-model="method.body[param]" style="min-height: 28px"></textarea>
+										{{param.name}} ({{param.type ? param.type : 'mixed'}})
+										<textarea ng-model="method.body[param.name]" style="min-height: 28px"></textarea>
 									</label>
 
 								</fieldset>

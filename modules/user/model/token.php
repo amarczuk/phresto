@@ -11,7 +11,12 @@ class token extends MySQLModel {
     const INDEX = 'id';
     const COLLECTION = 'token';
 
-    protected static $_fields = [ 'id', 'created', 'token', 'user', 'ttl' ];
+    protected static $_fields = [ 'id' => 'int', 
+                                  'created' => 'DateTime', 
+                                  'token' => 'string', 
+                                  'user' => 'int', 
+                                  'ttl' => 'int' 
+                                ];
     protected static $_defaults = [ 'ttl' => 7, 'created' => '' ];
     protected static $_relations = [
         'user' => [
@@ -23,7 +28,7 @@ class token extends MySQLModel {
     ];
     
     protected function default_created() {
-        return date( 'Y-m-d H:i' );
+        return DateTime();
     }
 
     protected function saveFilter() {
