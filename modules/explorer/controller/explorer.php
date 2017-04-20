@@ -18,7 +18,7 @@ class explorer extends Controller {
 	* returns explorer's UI
 	* @return html
 	*/
-	public function get() {
+	protected function get() {
 		$view = View::getView( 'main', 'explorer' );
 		$view->add( 'main', [], 'explorer' );
 

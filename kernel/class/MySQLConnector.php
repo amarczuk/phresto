@@ -67,7 +67,7 @@ class MySQLConnector extends DBConnector
     public function bind( $query, $variables ) {
         foreach ( $variables as $key => $val ) {
             $val = $this->escape( $val );
-            $query = preg_replace( "/\\:{$key}([\\s,\\)]+)/iU", "{$val}\$1", $query );
+            $query = preg_replace( "/\\:{$key}([\\s,\\)]+|$)/isU", "{$val}\$1", $query );
         }
 
         return $query;

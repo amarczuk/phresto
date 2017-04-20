@@ -37,7 +37,7 @@ class Model implements ModelInterface, \JsonSerializable {
     /**
     * array describes model relations:
     * 'model_name' => [ // key is the related model name
-    *        'type' => '1:n', // 1:1, 1:n, n:1, n:n - first model second related model
+    *        'type' => '1:n', // 1:1, 1>1, 1<1, 1:n, n:1, n:n - first model second related model
     *        'model' => 'model_name', // related model name
     *        'field' => 'field_in_related_model',  // name of the FK in related model
     *        'index' => 'id', // index (FK) in the model
@@ -116,11 +116,17 @@ class Model implements ModelInterface, \JsonSerializable {
     }
 
     public function setById( $id ) {
-        $this->setObject( static::find( [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] )[0] );
+        $obj = static::find( [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] );
+        if ( isset( $obj[0] ) ) {
+            $this->setObject( $obj[0] );
+        }
     }
 
     public function setRelatedById( $model, $id ) {
-        $this->setObject( static::findRelated( $model, [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] )[0] );
+        $related = static::findRelated( $model, [ 'where' => [ static::INDEX => $id ], 'limit' => 1 ] );
+        if ( isset( $related[0] ) ) {
+            $this->setObject( $related[0] );
+        }
     }
 
     public function update( $modelArray ) {

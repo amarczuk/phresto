@@ -125,7 +125,7 @@ class Controller {
 	* prints controller description
 	* @return object
 	*/
-	protected function discover_get() {
+	public function discover_get() {
 		return View::jsonResponse( static::discover() );
 	}
 
@@ -133,7 +133,11 @@ class Controller {
 		return $method->getParameters();
 	}
 
-	public static function discover( $className = null ) {
+	protected static function getRelatedEndpoints( $className ) {
+		return [];
+	}
+
+	public static function discover( $className = null, $getRelated = true ) {
 
 		$hasParam = function( $params, $field ) {
 			foreach ($params as $param) {
@@ -155,7 +159,7 @@ class Controller {
 		$tmp = explode( '\\', ( isset( $className ) ) ? $className : static::CLASSNAME );
 		$classNameOnly = array_pop( $tmp );
 
-		$classMethods = $reflection->getMethods( \ReflectionMethod::IS_PUBLIC + \ReflectionMethod::IS_PROTECTED );
+		$classMethods = $reflection->getMethods( \ReflectionMethod::IS_PUBLIC );
 		$staticProps = $reflection->getDefaultProperties(); 
 		$fields = $staticProps['routeMapping'];
 
@@ -216,6 +220,11 @@ class Controller {
 			unset($methodName);
 
 			$endpoints[$endpoint]['methods'][] = $describe;
+		}
+
+		if ( !empty( $className ) && $getRelated ) {
+			$relatedEndpoints = static::getRelatedEndpoints( $className );
+			$endpoints = array_merge( $endpoints, $relatedEndpoints );
 		}
 
 		return array_values( $endpoints );

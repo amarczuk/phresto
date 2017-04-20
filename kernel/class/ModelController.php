@@ -90,11 +90,66 @@ class ModelController extends Controller {
 		return $params;
 	}
 
+	protected static function getRelatedEndpoints( $className ) {
+		$getModelDisc = function( $paths, $model ) {
+			foreach ( $paths as $path ) {
+				if ( $path['endpoint'] == $model ) {
+					return $path;
+				}
+			}
+
+			return null;
+		};
+
+		$reflection = new \ReflectionClass( $className );
+		$staticProps = $reflection->getStaticProperties(); 
+		if ( empty( $staticProps['_relations'] ) ) {
+			return [];
+		}
+
+		$tmp = explode( '\\', ( isset( $className ) ) ? $className : static::CLASSNAME );
+		$classNameOnly = array_pop( $tmp );
+
+		$methodsAllowed = [
+			'1:n' => [ 'head', 'get', 'post', 'delete' ],
+			'n:n' => [ 'head', 'get', 'post', 'delete' ],
+			'1:1' => [ 'head', 'get', 'post', 'delete' ],
+			'1>1' => [ 'head', 'get', 'post', 'delete' ],
+			'1<1' => [ 'head', 'get' ],
+			'n:1' => [ 'head', 'get' ]
+		];
+
+		$relatedModels = $staticProps['_relations'];
+		$endpoints = [];
+		foreach ( $relatedModels as $model => $relation ) {
+			$paths = ModelController::discover( "\\Phresto\\Modules\\Model\\{$model}", false );
+			$modelDiscovery = $getModelDisc( $paths, $model );
+			if ( empty( $modelDiscovery ) || empty( $modelDiscovery['methods'] ) ) {
+				continue;
+			}
+
+			$classMethods = $modelDiscovery['methods'];
+			$methods = [];
+
+			while ( !empty( $classMethods ) ) {
+				$method = array_shift( $classMethods );
+				if ( in_array( $method['name'], $methodsAllowed[$relation['type'] ] ) ) {
+					$methods[] = $method;
+				}
+			} 
+
+			$endpoint = $classNameOnly . '/_id_/' . $model;
+			$endpoints[$endpoint] = [ 'endpoint' => $endpoint, 'methods' => $methods, 'description' => $modelDiscovery['description'] ];
+		}
+
+		return $endpoints;
+	}
+
 	/**
 	* prints model description
 	* @return object
 	*/
-	protected function discover_get() {
+	public function discover_get() {
 		return View::jsonResponse( static::discover( $this->modelName ) );
 	}
 
@@ -103,7 +158,7 @@ class ModelController extends Controller {
 	* @param id record's index
 	* @return 200 - OK, 404 - not found
 	*/
-	protected function head( $id = null ) {	
+	public function head( $id = null ) {	
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );
 		}
@@ -127,7 +182,7 @@ class ModelController extends Controller {
 	* @param id record's index (all if empty)
 	* @return object / array of objects
 	*/
-	protected function get( $id = null ) {
+	public function get( $id = null ) {
 		if ( empty( $id ) && empty( $this->contextModel ) ) {
 			$modelName = $this->modelName;
 			return View::jsonResponse( $modelName::find( $this->query ) );
@@ -155,8 +210,20 @@ class ModelController extends Controller {
 	* @param json model properties
 	* @return object created record
 	*/
-	protected function post() {
+	public function post() {
 		$modelInstance = Container::{$this->modelName}( $this->body );
+
+		if ( !empty( $this->contextModel ) ) {
+			$relation = $modelInstance->getRelation( $this->contextModel->getName() );
+			if ( $relation['type'] == 'n:1' ) {
+				throw new RequestException( 400 );
+			}
+
+			$fk = $relation['index'];
+			$related = $relation['field'];
+			$modelInstance->$fk = $this->contextModel->$related;
+		}
+		
 		$modelInstance->save();
 		return View::jsonResponse( $modelInstance );		
 	}
@@ -167,22 +234,22 @@ class ModelController extends Controller {
 	* @param json model properties
 	* @return object updated record
 	*/
-	protected function patch( $id = null ) {
+	public function patch( $id = null ) {
 		if ( !empty( $this->contextModel ) ) {
-			throw new RequestException( '400' );
+			throw new RequestException( 400 );
 		}
 
 		if ( empty( $id ) ) {
-			throw new RequestException( '404' );
+			throw new RequestException( 404 );
 		}
 
 		if ( empty( $this->body ) ) {
-			throw new RequestException( '204' );
+			throw new RequestException( 204 );
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
 		if ( empty( $modelInstance->id ) ) {
-			throw new RequestException( '404' );
+			throw new RequestException( 404 );
 		}
 		$modelInstance->update( $this->body );
 		$modelInstance->save();
@@ -195,13 +262,13 @@ class ModelController extends Controller {
 	* @param json model properties
 	* @return object updated record
 	*/
-	protected function put( $id = null ) {
+	public function put( $id = null ) {
 		if ( !empty( $this->contextModel ) ) {
-			throw new RequestException( '400' );
+			throw new RequestException( 400 );
 		}
 
 		if ( empty( $this->body ) ) {
-			throw new RequestException( '204' );
+			throw new RequestException( 204 );
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
@@ -215,15 +282,21 @@ class ModelController extends Controller {
 	* @param id
 	* @return object deleted record
 	*/
-	protected function delete( $id = null ) {
+	public function delete( $id = null ) {
 		if ( empty( $id ) ) {
 			throw new RequestException( '404' );
 		}
 
-		$modelInstance = Container::{$this->modelName}( $id );
+		$modelInstance = Container::{$this->modelName}();
 		
-		if ( empty( $modelInstance->id ) ) {
-			throw new RequestException( '404' );
+		if ( !empty( $this->contextModel ) ) {
+			$modelInstance->setRelatedById( $this->contextModel, $id );
+		} else {
+			$modelInstance->setById( $id );
+		}
+
+		if ( empty( $modelInstance->getIndex() ) ) {
+			throw new RequestException( 404 );
 		}
 
 		$modelInstance->delete();

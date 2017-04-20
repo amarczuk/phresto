@@ -78,6 +78,7 @@ class MySQLModel extends Model {
     	$result = $db->query( $sql, $binds );
 
         $modelClass = static::CLASSNAME;
+        $res = [];
     	while ( $row = $db->getNext( $result ) ) {
     		$res[] = Container::$modelClass($row);
     	}
@@ -95,7 +96,7 @@ class MySQLModel extends Model {
         list( $conds, $binds ) = static::getConds( $query, 'm.' );
 
         $fields = 'm.*';
-        if ( is_array( $query['fields'] ) ) {
+        if ( !empty( $query['fields'] ) && is_array( $query['fields'] ) ) {
             if ( !in_array( static::INDEX, $query['fields'] ) ) {
                 array_unshift( $query['fields'], static::INDEX );
             }
@@ -107,7 +108,7 @@ class MySQLModel extends Model {
             case '1:n':
             case 'n:1':
                 $conds[] = 'm.' . $relation['index'] . ' = r.' . $relation['field'];
-                $conds[] = 'r.' . $relation['field'] . ' = :mfield';
+                $conds[] = 'r.' . $model->getIndexField() . ' = :mfield';
                 $binds['mfield'] = $model->getIndex();
                 $sql = "SELECT {$fields} FROM " . static::COLLECTION . " m, " . $model->getCollection() . " r
                  WHERE " . implode( ' AND ', $conds );
@@ -122,6 +123,7 @@ class MySQLModel extends Model {
         $result = $db->query( $sql, $binds );
 
         $modelClass = static::CLASSNAME;
+        $res = [];
         while ( $row = $db->getNext( $result ) ) {
             $res[] = Container::$modelClass( $row );
         }

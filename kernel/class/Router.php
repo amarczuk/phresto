@@ -66,7 +66,7 @@ class Router {
 			'message' => $message,
 			'trace' => $trace
 		];
-		if ( mb_strpos( $_SERVER["CONTENT_TYPE"], 'application/json' ) !== false ) {
+		if ( !empty( $_SERVER["CONTENT_TYPE"] ) && mb_strpos( $_SERVER["CONTENT_TYPE"], 'application/json' ) !== false ) {
 			return View::jsonResponse( $resp );
 		}
 

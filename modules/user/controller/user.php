@@ -12,7 +12,7 @@ class user extends CustomModelController {
 	const CLASSNAME = __CLASS__;
 	const MODELCLASS = 'Phresto\\Modules\\Model\\user';
 
-	protected function authenticate_post( string $email, string $password ) {
+	public function authenticate_post( string $email, string $password ) {
 		if ( empty($date) ) $date = new \DateTime();
 		return View::jsonResponse( ['email' => $email, 'pass' => $password ] );
 	}
