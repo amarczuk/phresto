@@ -13,14 +13,15 @@ class user extends MySQLModel {
 
     protected static $_fields = [ 'id' => 'int', 
                                   'email' => 'string', 
-                                  'pass' => 'string', 
+                                  'email_md5' => 'string', 
+                                  'password' => 'string', 
                                   'name' => 'string', 
-                                  'nick' => 'string', 
-                                  'date_payment' => 'int', 
                                   'status' => 'int', 
-                                  'date_added' => 'int', 
-                                  'date_logged' => 'int' 
+                                  'created' => 'DateTime', 
+                                  'last_logged' => 'DateTime' 
                                 ];
+
+    protected static $_defaults = [ 'status' => 1, 'created' => '' ];
     protected static $_relations = [
         'token' => [
             'type' => '1:n',
@@ -30,8 +31,24 @@ class user extends MySQLModel {
         ]
     ];
 
+    protected function image_value() {
+        return '//www.gravatar.com/avatar/' . $this->email_md5 . '?d=retro';
+    }
+
+    protected function saveFilter() {
+        $this->email_md5 = md5( $this->email );
+        if ( $this->_initial['password'] != $this->password ) {
+            $this->password = md5( md5( $this->password ) );
+        }
+    }
+
+    protected function default_created() {
+        return DateTime();
+    }
+
     protected function filterJson( $fields ) {
-    	$fields['pass'] = '*********';
+    	$fields['password'] = '* * *';
+        $fields['image'] = $this->image;
     	return $fields;
     }
 }

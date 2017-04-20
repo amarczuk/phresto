@@ -135,7 +135,7 @@ class MySQLModel extends Model {
     	if ( !$this->_new ) {
             $fields = [];
             foreach ( $this->_properties as $key => $value) {
-                $fields[] = $key . ' = :' . $key;
+                $fields[] = '`' . $key . '` = :' . $key;
             }
     		$sql = "UPDATE " . static::COLLECTION . " SET " . implode( ', ', $fields );
     		$sql .= " WHERE " . static::INDEX . " = :" . static::INDEX . " LIMIT 1";

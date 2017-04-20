@@ -247,7 +247,14 @@ class Model implements ModelInterface, \JsonSerializable {
             return $this->_debug;
         }
 
-    	return $this->getTyped( $name );
+        if ( array_key_exists( $name, static::$_fields ) ) {
+    	   return $this->getTyped( $name );
+        }
+
+        if ( method_exists( $this, "{$name}_value" ) ) {
+            $method = "{$name}_value";
+            return $this->$method();
+        }
     }
 
     public function __isset( $name ) {

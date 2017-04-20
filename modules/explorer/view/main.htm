@@ -13,7 +13,7 @@
 
 	<div class="row">
 		<accordion close-others="false">
-			<accordion-group heading="/{{controller.endpoint}}" ng-repeat="controller in routes">
+			<accordion-group heading="/{{controller.endpoint}}" ng-repeat="controller in routes | orderBy:'endpoint'">
 				<ul class="tabs" data-tabs id="{{controller.endpoint | idfy}}-tabs">
 				  <li class="tabs-title" ng-repeat="method in controller.methods">
 				  	<a href="#{{controller.endpoint | idfy}}-panel-{{method.name}}">{{method.name}}</a>
