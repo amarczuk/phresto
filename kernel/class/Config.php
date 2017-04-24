@@ -62,8 +62,7 @@ class Config {
     }
 
     private static function getPath( $name, $module = null ) {
-        $base = __DIR__ . '/../..';
-        return ( empty( $module ) ) ? "{$base}/kernel/config/{$name}.ini" : "{$base}/modules/{$module}/config/{$name}.ini";
+        return ( empty( $module ) ) ? PHRESTO_ROOT . "/kernel/config/{$name}.ini" : PHRESTO_ROOT . "/modules/{$module}/config/{$name}.ini";
     }
 
     public static function saveConfig( $name, $config, $module = null ) {

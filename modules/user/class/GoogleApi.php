@@ -1,5 +1,8 @@
 <?php
 
+namespace Phresto\Modules;
+
+use Phresto\Utils;
 
 use OAuth\ServiceFactory;
 use OAuth\OAuth2\Service\Google;
@@ -15,12 +18,13 @@ class GoogleApi {
     protected $googleService;
 
     public function __construct( $key, $secret ) {
-        $url = $_SERVER["HTTP_HOST"] . '/google';
+        $url = $_SERVER["HTTP_HOST"] . '/user/google';
         if ( $_SERVER["HTTPS"] == 'on' ) {
             $url = 'https://' . $url;
         } else {
             $url = 'http://' . $url;
         }
+
         $this->storage = new Session();
         $this->credentials = new Credentials(
             $key,
@@ -35,7 +39,7 @@ class GoogleApi {
     public function getUserDetails() {
 
         if ( !empty( $_GET['error'] ) ) {
-            throw new Exception( $_GET['error'] );
+            throw new \Exception( $_GET['error'] );
         }
 
         if ( !empty($_GET['code']) ) {
@@ -46,12 +50,7 @@ class GoogleApi {
             return $result;
 
         } else {
-            if ( !empty( $_GET['p'] ) ) {
-                $_SESSION['login_from'] = $_GET['p'];
-            } else {
-                $_SESSION['login_from'] = '';
-            }
-            Misc::Load( $this->googleService->getAuthorizationUri() );
+            Utils::Redirect( $this->googleService->getAuthorizationUri() );
         }
     }
 }

@@ -1,1 +1,0 @@
-<?phpclass githubhttpredView extends View {	protected $module = 'user';	protected function _prepare() {		$this->setModule();			global $Config;		$Config->Templ->AddScript( 'inline_js', 'opener.phpfy.social.success(' . $_GET['un'] . '); opener.focus(); window.close();' );    }};

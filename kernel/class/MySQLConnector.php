@@ -29,7 +29,12 @@ class MySQLConnector extends DBConnector
     }
     
     public function escape( $var ) {
-        if ( empty( $var ) ) {
+
+        if ( is_bool( $var ) ) {
+            return ( $var ) ? 'TRUE' : 'FALSE';
+        }
+
+        if ( empty( $var ) && $var !== 0 ) {
             return "''";
         }
 
@@ -44,10 +49,6 @@ class MySQLConnector extends DBConnector
             return '(' . implode( ', ', array_values( $var ) ) . ')';
         }
 
-        if ( is_bool( $var ) ) {
-            return ( $var ) ? 'TRUE' : 'FALSE';
-        }
-
         if ( is_numeric( $var ) ) {
             return $var;
         }
@@ -56,7 +57,7 @@ class MySQLConnector extends DBConnector
             return "'" . $var->format( \DateTime::ISO8601 ) . "'";
         }
 
-        if ( is_object( $var ) || is_array( $var ) ) {
+        if ( is_object( $var ) ) {
             return "'" . json_encode( $var ) . "'";
         }
 
@@ -67,7 +68,7 @@ class MySQLConnector extends DBConnector
     public function bind( $query, $variables ) {
         foreach ( $variables as $key => $val ) {
             $val = $this->escape( $val );
-            $query = preg_replace( "/\\:{$key}([\\s,\\)]+|$)/isU", "{$val}\$1", $query );
+            $query = preg_replace( "/\\:{$key}([\\s,\\)\\%\\.\\?]+|$)/isU", "{$val}\$1", $query );
         }
 
         return $query;

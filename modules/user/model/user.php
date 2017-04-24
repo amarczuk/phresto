@@ -18,7 +18,7 @@ class user extends MySQLModel {
                                   'name' => 'string', 
                                   'status' => 'int', 
                                   'created' => 'DateTime', 
-                                  'last_logged' => 'DateTime' 
+                                  'last_login' => 'DateTime' 
                                 ];
 
     protected static $_defaults = [ 'status' => 1, 'created' => '' ];
@@ -43,7 +43,7 @@ class user extends MySQLModel {
     }
 
     protected function default_created() {
-        return DateTime();
+        return new \DateTime();
     }
 
     protected function filterJson( $fields ) {

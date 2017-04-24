@@ -1,1 +1,0 @@
-<?phpclass projectsView extends AjaxView {	protected $module = 'user';	protected function _prepare() {		$this->setModule();			global $User;		global $Config;		if ( !$User->isLog() ) {			Misc::Load( '/?mod=user' );		} 		$data = $User->getProjects();		$data['open'] = 'projects';     		$Config->Templ->Add( 'user-projects', $data );    }};

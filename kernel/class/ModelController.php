@@ -149,8 +149,8 @@ class ModelController extends Controller {
 	* prints model description
 	* @return object
 	*/
-	public function discover_get() {
-		return View::jsonResponse( static::discover( $this->modelName ) );
+	protected function discover_get() {
+		return $this->jsonResponse( static::discover( $this->modelName ) );
 	}
 
 	/**
@@ -185,7 +185,7 @@ class ModelController extends Controller {
 	public function get( $id = null ) {
 		if ( empty( $id ) && empty( $this->contextModel ) ) {
 			$modelName = $this->modelName;
-			return View::jsonResponse( $modelName::find( $this->query ) );
+			return $this->jsonResponse( $modelName::find( $this->query ) );
 		}
 
 		$modelInstance = Container::{$this->modelName}();
@@ -194,7 +194,7 @@ class ModelController extends Controller {
 		} else {
 			if ( empty( $id ) ) {
 				$modelName = $this->modelName;
-				return View::jsonResponse( $modelName::findRelated( $this->contextModel, $this->query ) );
+				return $this->jsonResponse( $modelName::findRelated( $this->contextModel, $this->query ) );
 			}
 			$modelInstance->setRelatedById( $this->contextModel, $id );
 		}
@@ -202,7 +202,7 @@ class ModelController extends Controller {
 		if ( empty( $modelInstance->getIndex() ) ) {
 			throw new RequestException( '404' );
 		}
-		return View::jsonResponse( $modelInstance );
+		return $this->jsonResponse( $modelInstance );
 	}
 
 	/**
@@ -215,7 +215,7 @@ class ModelController extends Controller {
 
 		if ( !empty( $this->contextModel ) ) {
 			$relation = $modelInstance->getRelation( $this->contextModel->getName() );
-			if ( $relation['type'] == 'n:1' ) {
+			if ( in_array( $relation['type'], ['1:n', '1>1'] ) ) {
 				throw new RequestException( 400 );
 			}
 
@@ -225,7 +225,7 @@ class ModelController extends Controller {
 		}
 		
 		$modelInstance->save();
-		return View::jsonResponse( $modelInstance );		
+		return $this->jsonResponse( $modelInstance );		
 	}
 
 	/**
@@ -253,7 +253,7 @@ class ModelController extends Controller {
 		}
 		$modelInstance->update( $this->body );
 		$modelInstance->save();
-		return View::jsonResponse( $modelInstance );
+		return $this->jsonResponse( $modelInstance );
 	}
 
 	/**
@@ -274,7 +274,7 @@ class ModelController extends Controller {
 		$modelInstance = Container::{$this->modelName}( $id );
 		$modelInstance->update( $this->body );
 		$modelInstance->save();
-		return View::jsonResponse( $modelInstance );
+		return $this->jsonResponse( $modelInstance );
 	}
 
 	/**
@@ -300,6 +300,6 @@ class ModelController extends Controller {
 		}
 
 		$modelInstance->delete();
-		return View::jsonResponse( $modelInstance );
+		return $this->jsonResponse( $modelInstance );
 	}
 }

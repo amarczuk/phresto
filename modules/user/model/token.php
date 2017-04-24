@@ -28,7 +28,7 @@ class token extends MySQLModel {
     ];
     
     protected function default_created() {
-        return DateTime();
+        return new \DateTime();
     }
 
     protected function saveFilter() {

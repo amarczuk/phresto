@@ -30,7 +30,11 @@
 							<div class="small-12 columns">
 								<fieldset class="fieldset">
 	  								<legend>url</legend>
-									<b>/{{controller.endpoint}}</b>
+									<b>/{{controller.endpointOrg}}</b>
+									<span ng-if="controller.endpointRelated">
+										/ <input type="text" ng-model="method.url_id" placeholder="id" class="small" style="display: inline-block; width: auto; font-size: 14px; height: 24px;">
+									</span> 
+									<b ng-if="controller.endpointRelated">/{{controller.endpointRelated}}</b>
 									<span ng-repeat="param in method.urlparams">
 										/ <input type="text" ng-model="method.url[$index]" placeholder="{{param}}" class="small" style="display: inline-block; width: auto; font-size: 14px; height: 24px;">
 									</span> 

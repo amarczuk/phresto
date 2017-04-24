@@ -1,5 +1,8 @@
 <?php
 
+namespace Phresto\Modules;
+
+use Phresto\Utils;
 
 use OAuth\ServiceFactory;
 use OAuth\OAuth2\Service\GitHub;
@@ -15,12 +18,13 @@ class GithubApi {
     protected $githubService;
 
     public function __construct( $key, $secret ) {
-        $url = $_SERVER["HTTP_HOST"] . '/github';
+        $url = $_SERVER["HTTP_HOST"] . '/user/github';
         if ( $_SERVER["HTTPS"] == 'on' ) {
             $url = 'https://' . $url;
         } else {
             $url = 'http://' . $url;
         }
+
         $this->storage = new Session();
         $this->credentials = new Credentials(
             $key,
@@ -35,7 +39,7 @@ class GithubApi {
     public function getUserDetails() {
 
         if ( !empty( $_GET['error'] ) ) {
-            throw new Exception( $_GET['error'] );
+            throw new \Exception( $_GET['error'] );
         }
 
         if ( !empty($_GET['code']) ) {
@@ -48,16 +52,10 @@ class GithubApi {
             $user['email'] = $result2[0];
             $user['given_name'] = $result1['login'];
             $user['name'] = $result1['name'];
-            $user['picture'] = $result1['avatar_url'];
             return $user;
 
         } else {
-            if ( !empty( $_GET['p'] ) ) {
-                $_SESSION['login_from'] = $_GET['p'];
-            } else {
-                $_SESSION['login_from'] = '';
-            }
-            Misc::Load( $this->githubService->getAuthorizationUri() );
+            Utils::Redirect( $this->githubService->getAuthorizationUri() );
         }
     }
 }

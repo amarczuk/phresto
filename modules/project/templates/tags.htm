@@ -1,6 +1,0 @@
-	{? repeat($tags) ?}
-      <div class="small-12 columns bordercolapse button-group">
-          <div class='button tiny bold small-10 columns' href=>{? $tags[name] ?}</div>
-          <a class='button tiny bold alert small-2 columns ajaxbutton' href='/?mod=project&pg=delTag&id={? $id ?}&tid={? $tags[id] ?}' data-target='_run'><i class="fi-x"></i></a>
-      </div>
-      {? /repeat ?}

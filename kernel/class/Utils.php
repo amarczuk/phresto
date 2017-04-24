@@ -2,12 +2,12 @@
 
 namespace Phresto;
 
-require_once( __DIR__ . '/Config.php' );
+require_once( PHRESTO_ROOT . '/kernel/class/Config.php' );
 
 class Utils {
 
 	public static function autoload( $className ) {
-		$base = __DIR__ . '/../../';
+		$base = PHRESTO_ROOT . '/';
 		$path = explode( '\\', trim( $className, '\\' ) );
 		$modules = Config::getConfig( 'modules' );
 
@@ -65,7 +65,7 @@ class Utils {
 			return array_map( function( $elem ) use ( $base, $flag ) { return str_replace( $base, '', $elem ); }, glob( $base . '*', $flag ) );
 		};
 
-		$base = __DIR__ . '/../../modules/';
+		$base = PHRESTO_ROOT . '/modules/';
 		$modules = $getFiles( $base, GLOB_ONLYDIR );
 
 		$types = ['Controller', 'Model', 'class', 'Interf'];

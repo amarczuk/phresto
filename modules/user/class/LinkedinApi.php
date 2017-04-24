@@ -1,5 +1,8 @@
 <?php
 
+namespace Phresto\Modules;
+
+use Phresto\Utils;
 
 use OAuth\ServiceFactory;
 use OAuth\OAuth2\Service\Linkedin;
@@ -15,7 +18,7 @@ class LinkedinApi {
     protected $aService;
 
     public function __construct( $key, $secret ) {
-        $url = $_SERVER["HTTP_HOST"] . '/linkedin';
+        $url = $_SERVER["HTTP_HOST"] . '/user/linkedin';
         if ( $_SERVER["HTTPS"] == 'on' ) {
             $url = 'https://' . $url;
         } else {
@@ -35,7 +38,7 @@ class LinkedinApi {
     public function getUserDetails() {
 
         if ( !empty( $_GET['error'] ) ) {
-            throw new Exception( $_GET['error'] );
+            throw new \Exception( $_GET['error'] );
         }
 
         if ( !empty($_GET['code']) ) {
@@ -47,18 +50,10 @@ class LinkedinApi {
             $user['email'] = $result['emailAddress'];
             $user['given_name'] = $result['firstName'];
             $user['name'] = $result['firstName'] . ' ' . $result['lastName'];
-            if (  $result['pictureUrls']['_total'] > 0 ) {
-                $user['picture'] = $result['pictureUrls']['values'][0];
-            }
             return $user;
 
         } else {
-            if ( !empty( $_GET['p'] ) ) {
-                $_SESSION['login_from'] = $_GET['p'];
-            } else {
-                $_SESSION['login_from'] = '';
-            }
-            Misc::Load( $this->aService->getAuthorizationUri() );
+            Utils::Redirect( $this->aService->getAuthorizationUri() );
         }
     }
 }

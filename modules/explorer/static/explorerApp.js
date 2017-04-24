@@ -10,6 +10,9 @@ angular.module('app', ['mm.foundation']).controller(
 
       $scope.makeRequest = function(controller, method) {
         var url = controller.endpoint;
+        if (controller.endpointRelated) {
+          url = controller.endpointOrg + '/' + method.url_id + '/' + controller.endpointRelated;
+        }
         for(var idx in method.url) {
           url += '/' + method.url[idx];
         }
@@ -33,6 +36,15 @@ angular.module('app', ['mm.foundation']).controller(
 
       phresto.get('explorer/routes')
         .then(function(routes) {
+          for (var route in routes) {
+            if (routes[route].endpoint.search('/_id_/') > -1) {
+              var parts = routes[route].endpoint.split('/_id_/');
+              routes[route].endpointOrg = parts[0];
+              routes[route].endpointRelated = parts[1];
+            } else {
+              routes[route].endpointOrg = routes[route].endpoint;
+            }
+          }
           $scope.$apply(function() {
             $scope.routes = routes;
             console.log(routes);

@@ -121,12 +121,16 @@ class Controller {
 		return true;
 	}
 
+	protected function jsonResponse( $var ) {
+		return View::jsonResponse( $var );
+	}
+
 	/**
 	* prints controller description
 	* @return object
 	*/
-	public function discover_get() {
-		return View::jsonResponse( static::discover() );
+	protected function discover_get() {
+		return $this->jsonResponse( static::discover() );
 	}
 
 	protected static function getParameters( $method, $className ) {
