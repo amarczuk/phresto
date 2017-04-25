@@ -1,10 +1,8 @@
 <?php
-                       
-    
-    define('HEAD_TYTUL', 'PHPfy');  
-    define('HEAD_DESC', 'Play with php online'); 
-    define('HEAD_KEYW', 'PHP javascript html phpfiddlle jsfiddle online htmlfiddle fiddle'); 
-    
-    define('MYSQL_ERR', 'Sorry. Server is too busy right now.');
-                                                                        
+
+define('MYSQL_ERR', 'Sorry. Server is too busy right now.');
+define('LAN_HTTP_UNAUTHORIZED', 'Authorisation failed.');
+define('LAN_HTTP_NOT_FOUND', 'Resource not found.');
+define('LAN_HTTP_BAD_REQUEST', 'Request is not valid.');
+define('LAN_HTTP_NO_CONTENT', 'Empty request.');
     

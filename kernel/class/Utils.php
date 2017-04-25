@@ -27,7 +27,7 @@ class Utils {
 						$file = $base . '/modules/' . $module . '/' . mb_strtolower( $path[2] ) . '/' . $path[3] . '.php';
 						break;
 					}
-				} else if ( !empty( $files['class'] ) && in_array( $path[2], $files['class'] ) ) {
+				} else if ( !empty( $files['class'] ) && in_array( $path[2] . '.php', $files['class'] ) ) {
 					$file = $base . '/modules/' . $module . '/class/' . $path[2] . '.php';
 					break;
 				}
@@ -36,7 +36,7 @@ class Utils {
 		} else {
 			$file = $base . '/kernel/class/' . $path[1] . '.php';
 		}
-
+		
 		if ( !empty( $file ) && file_exists( $file ) ) {
 			require_once( $file );
 		}

@@ -29,16 +29,17 @@ class user extends CustomModelController {
 	*/
 	public function google_get() {
 		try {
-			$conf = $Config->getConfig( 'social' );
+			$conf = $Config->getConfig( 'social', 'user' );
 			$oauth = new GoogleApi( $conf['google']['key'], $conf['google']['secret'] );
 			
-			$token = User::socialLogin( $oauth->getUserDetails() );
+			$user = static::MODELCLASS;
+			$token = $user::socialLogin( $oauth->getUserDetails() );
 			$view = View::getView( 'oauth' );
-			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires ] );
+			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires->format( \DateTime::ISO8601 ) ], 'user' );
 			return $view->get();
 			
 		} catch( \Exception $e ) {
-			throw new RequestException( 403 );
+			throw new RequestException( LAN_HTTP_UNAUTHORIZED, 401 );
 		}
 	}
 
@@ -47,16 +48,17 @@ class user extends CustomModelController {
 	*/
 	public function facebook_get() {
 		try {
-			$conf = Config::getConfig( 'social' );
+			$conf = Config::getConfig( 'social', 'user' );
 			$oauth = new FBApi( $conf['fb']['key'], $conf['fb']['secret'] );
 			
-			$token = User::socialLogin( $oauth->getUserDetails() );
+			$user = static::MODELCLASS;
+			$token = $user::socialLogin( $oauth->getUserDetails() );
 			$view = View::getView( 'oauth' );
-			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires ] );
+			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires->format( \DateTime::ISO8601 ) ], 'user' );
 			return $view->get();
 			
 		} catch( \Exception $e ) {
-			throw new RequestException( 403 );
+			throw new RequestException( LAN_HTTP_UNAUTHORIZED, 401 );
 		}
 	}
 
@@ -65,16 +67,17 @@ class user extends CustomModelController {
 	*/
 	public function github_get() {
 		try {
-			$conf = Config::getConfig( 'social' );
+			$conf = Config::getConfig( 'social', 'user' );
 			$oauth = new GithubApi( $conf['github']['key'], $conf['github']['secret'] );
 			
-			$token = User::socialLogin( $oauth->getUserDetails() );
+			$user = static::MODELCLASS;
+			$token = $user::socialLogin( $oauth->getUserDetails() );
 			$view = View::getView( 'oauth' );
-			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires ] );
+			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires->format( \DateTime::ISO8601 ) ], 'user' );
 			return $view->get();
 			
 		} catch( \Exception $e ) {
-			throw new RequestException( 403 );
+			throw new RequestException( LAN_HTTP_UNAUTHORIZED, 401 );
 		}
 	}
 
@@ -83,17 +86,19 @@ class user extends CustomModelController {
 	*/
 	public function linkedin_get() {
 		try {
-			$conf = Config::getConfig( 'social' );
+			$conf = Config::getConfig( 'social', 'user' );
 			$oauth = new LinkedinApi( $conf['linkedin']['key'], $conf['linkedin']['secret'] );
 			
-			$token = User::socialLogin( $oauth->getUserDetails() );
+			$user = static::MODELCLASS;
+			$token = $user::socialLogin( $oauth->getUserDetails() );
 			$view = View::getView( 'oauth' );
-			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires ] );
+			$view->add( 'oauthSuccess', [ 'token' => $token->token, 'expires' => $token->expires->format( \DateTime::ISO8601 ) ], 'user' );
 			return $view->get();
 			
 		} catch( \Exception $e ) {
-			throw new RequestException( 403 );
+			throw new RequestException( LAN_HTTP_UNAUTHORIZED, 401 );
 		}
 	}
+
 
 }

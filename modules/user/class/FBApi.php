@@ -6,7 +6,7 @@ use Phresto\Utils;
 use OAuth\ServiceFactory;
 use OAuth\OAuth2\Service\Facebook;
 use OAuth\Common\Storage\Session;
-use OAuth\Common\Consumer\Credentials;;
+use OAuth\Common\Consumer\Credentials;
 
 class FBApi {
 
@@ -18,7 +18,7 @@ class FBApi {
 
     public function __construct( $key, $secret ) {
         $url = $_SERVER["HTTP_HOST"] . '/user/facebook';
-        if ( $_SERVER["HTTPS"] == 'on' ) {
+        if ( !empty( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == 'on' ) {
             $url = 'https://' . $url;
         } else {
             $url = 'http://' . $url;
@@ -32,7 +32,7 @@ class FBApi {
         );
 
         $serviceFactory = new ServiceFactory();
-        $this->fbService = $serviceFactory->createService( 'facebook', $this->credentials, $this->storage, [] );
+        $this->fbService = $serviceFactory->createService( 'facebook', $this->credentials, $this->storage, [Facebook::SCOPE_PUBLIC_PROFILE, Facebook::SCOPE_EMAIL] );
     }
 
     public function getUserDetails() {
@@ -49,7 +49,6 @@ class FBApi {
             $result1 = json_decode( $this->fbService->request('/me'), true );
 
             $user['email'] = $result1['email'];
-            $user['given_name'] = $result1['first_name'];
             $user['name'] = $result1['name'];
             return $user;
 

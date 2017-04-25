@@ -27,7 +27,7 @@ class Controller {
 		$this->bodyRaw = $bodyRaw;
 
 		if ( !$this->auth() ) {
-			throw new Exception\RequestException( '403' );
+			throw new Exception\RequestException( LAN_HTTP_UNAUTHORIZED, 401 );
 		}
 	}
 
@@ -52,7 +52,7 @@ class Controller {
 		} else if ( $reflection->hasMethod( $this->reqType ) ) {
 			$method = $reflection->getMethod( $this->reqType );
 		} else {
-			throw new Exception\RequestException( '404' );
+			throw new Exception\RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 
 		$params = $method->getParameters();

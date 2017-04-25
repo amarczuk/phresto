@@ -2,6 +2,8 @@
 
 namespace Phresto\Modules\Model;
 use Phresto\MySQLModel;
+use Phresto\Model;
+use Phresto\Modules\Model\token;
 
 class user extends MySQLModel {
 	const CLASSNAME = __CLASS__;
@@ -38,7 +40,7 @@ class user extends MySQLModel {
     protected function saveFilter() {
         $this->email_md5 = md5( $this->email );
         if ( $this->_initial['password'] != $this->password ) {
-            $this->password = md5( md5( $this->password ) );
+            $this->password = static::passHash( $this->password );
         }
     }
 
@@ -50,5 +52,54 @@ class user extends MySQLModel {
     	$fields['password'] = '* * *';
         $fields['image'] = $this->image;
     	return $fields;
+    }
+
+    protected static function passHash( $password ) {
+        return md5( md5( $password ) );
+    }
+
+    public static function login( $email, $password ) {
+        if ( empty( $email ) || empty( $password ) ) {
+            throw new \Exception( 'Blank password or email' );
+        }
+
+        $user = new user( [ 'where' => [ 'email' => $email, 'password' => static::passHash( $password ) ] ] );
+        if ( empty( $user->getIndex() ) ) {
+            throw new \Exception( 'No user found' );
+        }
+
+        $user->last_login = new \DateTime();
+        $user->save();
+
+        return static::getToken( $user );
+    }
+
+    public static function socialLogin( $userDetails ) {
+        var_dump($userDetails);
+        $user = new user( [ 'where' => [ 'email' => $userDetails['email'] ] ] );
+        
+        if ( empty( $user->getIndex() ) ) {
+            $user->email = $userDetails['email'];
+            $user->name = $userDetails['name'];
+            $user->save();
+        }
+
+        $user->last_login = new \DateTime();
+        $user->save();
+
+        return static::getToken( $user );
+    }
+
+    protected static function getToken( Model $user ) {
+        $tokens = token::findRelated( $user );
+        if ( empty( $tokens ) || empty( $tokens[0] ) ) {
+            $token = new token();
+            $token->user = $user->getIndex();
+            $token->save();
+        } else {
+            $token = $tokens[0];
+        }
+
+        return $token;
     }
 }

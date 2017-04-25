@@ -64,7 +64,7 @@ class ModelController extends Controller {
 
 		$thisModelName = $this->modelName;
 		if ( !$thisModel->getIndex() || !$thisModelName::isRelated( $model ) ) {
-			throw new RequestException( 404 );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 
 		$modelClass = 'Phresto\\Modules\\Model\\' . $model;
@@ -160,7 +160,7 @@ class ModelController extends Controller {
 	*/
 	public function head( $id = null ) {	
 		if ( empty( $id ) ) {
-			throw new RequestException( '404' );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 
 		$modelInstance = Container::{$this->modelName}();
@@ -171,7 +171,7 @@ class ModelController extends Controller {
 		}
 
 		if ( empty( $modelInstance->getIndex() ) ) {
-			throw new RequestException( '404' );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 
 		return null;
@@ -200,7 +200,7 @@ class ModelController extends Controller {
 		}
 
 		if ( empty( $modelInstance->getIndex() ) ) {
-			throw new RequestException( '404' );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 		return $this->jsonResponse( $modelInstance );
 	}
@@ -216,7 +216,7 @@ class ModelController extends Controller {
 		if ( !empty( $this->contextModel ) ) {
 			$relation = $modelInstance->getRelation( $this->contextModel->getName() );
 			if ( in_array( $relation['type'], ['1:n', '1>1'] ) ) {
-				throw new RequestException( 400 );
+				throw new RequestException( LAN_HTTP_BAD_REQUEST, 400 );
 			}
 
 			$fk = $relation['index'];
@@ -236,20 +236,20 @@ class ModelController extends Controller {
 	*/
 	public function patch( $id = null ) {
 		if ( !empty( $this->contextModel ) ) {
-			throw new RequestException( 400 );
+			throw new RequestException( LAN_HTTP_BAD_REQUEST, 400 );
 		}
 
 		if ( empty( $id ) ) {
-			throw new RequestException( 404 );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 
 		if ( empty( $this->body ) ) {
-			throw new RequestException( 204 );
+			throw new RequestException( LAN_HTTP_NO_CONTENT, 204 );
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
 		if ( empty( $modelInstance->id ) ) {
-			throw new RequestException( 404 );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 		$modelInstance->update( $this->body );
 		$modelInstance->save();
@@ -264,11 +264,11 @@ class ModelController extends Controller {
 	*/
 	public function put( $id = null ) {
 		if ( !empty( $this->contextModel ) ) {
-			throw new RequestException( 400 );
+			throw new RequestException( LAN_HTTP_BAD_REQUEST, 400 );
 		}
 
 		if ( empty( $this->body ) ) {
-			throw new RequestException( 204 );
+			throw new RequestException( LAN_HTTP_NO_CONTENT, 204 );
 		}
 
 		$modelInstance = Container::{$this->modelName}( $id );
@@ -284,7 +284,7 @@ class ModelController extends Controller {
 	*/
 	public function delete( $id = null ) {
 		if ( empty( $id ) ) {
-			throw new RequestException( '404' );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 
 		$modelInstance = Container::{$this->modelName}();
@@ -296,7 +296,7 @@ class ModelController extends Controller {
 		}
 
 		if ( empty( $modelInstance->getIndex() ) ) {
-			throw new RequestException( 404 );
+			throw new RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		}
 
 		$modelInstance->delete();

@@ -19,11 +19,12 @@ class LinkedinApi {
 
     public function __construct( $key, $secret ) {
         $url = $_SERVER["HTTP_HOST"] . '/user/linkedin';
-        if ( $_SERVER["HTTPS"] == 'on' ) {
+        if ( !empty( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == 'on' ) {
             $url = 'https://' . $url;
         } else {
             $url = 'http://' . $url;
         }
+
         $this->storage = new Session();
         $this->credentials = new Credentials(
             $key,
@@ -48,7 +49,6 @@ class LinkedinApi {
             $user = [];
             $result = json_decode( $this->aService->request( '/people/~:(first-name,last-name,picture-urls::(original),email-address)?format=json' ), true );
             $user['email'] = $result['emailAddress'];
-            $user['given_name'] = $result['firstName'];
             $user['name'] = $result['firstName'] . ' ' . $result['lastName'];
             return $user;
 

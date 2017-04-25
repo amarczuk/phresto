@@ -31,12 +31,21 @@ class token extends MySQLModel {
         return new \DateTime();
     }
 
+    protected function expires_value() {
+        if ( empty( $this->created ) ) return null;
+        $expires = new \DateTime( $this->created->format( \DateTime::ISO8601 ) );
+        $expires->modify( "+ {$this->ttl} day" );
+        return $expires;
+    }
+
     protected function saveFilter() {
         if ( $this->_new ) $this->token = uniqid();
     }
 
     protected function filterJson( $fields ) {
-    	$fields['token'] = '*********';
+        $fields['token'] = '*********';
+        $fields['expires'] = $this->expires;
     	return $fields;
     }
+
 }

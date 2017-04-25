@@ -44,7 +44,7 @@ class Router {
         	} else if ( file_exists( 'static/index.html' ) ) {
         		return file_get_contents( 'static/index.html' );
         	} else {
-        		throw new Exception\RequestException( '404' );
+        		throw new Exception\RequestException( LAN_HTTP_NOT_FOUND, 404 );
         	}
         } else {
 		    if ( class_exists( 'Phresto\\Modules\\Controller\\' . $class ) ) {
@@ -52,7 +52,7 @@ class Router {
 		    } else if ( class_exists( 'Phresto\\Modules\\Model\\' . $class ) ) {
 		    	$instance = Container::ModelController( 'Phresto\\Modules\\Model\\' . $class, $reqType, $route, $body, $bodyRaw, $query, $headers );
 		    } else {
-		    	throw new Exception\RequestException( '404' );
+		    	throw new Exception\RequestException( LAN_HTTP_NOT_FOUND, 404 );
 		    }
 		}
 
@@ -61,6 +61,12 @@ class Router {
 
 	public static function routeException( $ex = 500, $message = '', $trace = '' ) {
 		http_response_code((int)$ex);
+		
+		$app = Config::getConfig( 'app' );
+		if ( empty( $app['app']['env'] ) || $app['app']['env'] != 'dev' ) {
+			$trace = '';
+		}
+
 		$resp = [
 			'status' => $ex,
 			'message' => $message,

@@ -1,7 +1,5 @@
 <?php
-	// JĘZYK POLSKI
+	// ENGLISH
 
 define( 'LAN_EMAIL_LAB', 'email' );
-
-
 

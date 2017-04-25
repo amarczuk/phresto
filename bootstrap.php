@@ -2,6 +2,7 @@
 
 define( 'PHRESTO_ROOT', __DIR__ );
 
+session_start();
 ob_start();
 
 require_once 'vendor/autoload.php';
@@ -12,7 +13,7 @@ Phresto\Utils::registerAutoload();
 try {
 	$response = Phresto\Router::route();
 } catch( Phresto\Exception\RequestException $e ) {
-	$response = Phresto\Router::routeException( $e->getMessage() );
+	$response = Phresto\Router::routeException( $e->getCode(), $e->getMessage(), $e->getTrace() );
 } catch( Exception $e ) {
 	$response = Phresto\Router::routeException( 500, $e->getMessage(), $e->getTrace() );
 }
