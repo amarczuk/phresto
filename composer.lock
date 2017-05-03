@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8106f81d13e1a4cb23d37ef4daa9b7b1",
+    "content-hash": "0c4ca36673a5e6c113949f594c86ad73",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -72,12 +72,48 @@
                 "security"
             ],
             "time": "2016-07-12T22:15:40+00:00"
+        },
+        {
+            "name": "phresto/phresto",
+            "version": "dev-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amarczuk/phresto-lib.git",
+                "reference": "077952be068f9fdbafa3e4fb0aa96a9267608df3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amarczuk/phresto-lib/zipball/077952be068f9fdbafa3e4fb0aa96a9267608df3",
+                "reference": "077952be068f9fdbafa3e4fb0aa96a9267608df3",
+                "shasum": ""
+            },
+            "require": {
+                "lusitanian/oauth": "*",
+                "php": ">=5.4.0"
+            },
+            "bin": [
+                "bin/phresto"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phresto\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Simple PHP REST framework",
+            "time": "2017-05-03 21:20:09"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "phresto/phresto": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

@@ -1,5 +1,5 @@
 {
   "require" : {
-    "lusitanian/oauth": "*"
+    "phresto/phresto": "dev-dev"
   }
 }

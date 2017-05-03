@@ -6,9 +6,11 @@ session_start();
 ob_start();
 
 require_once 'vendor/autoload.php';
-require_once 'kernel/class/Utils.php';
 
 Phresto\Utils::registerAutoload();
+Phresto\View::setMainLanguage();
+
+$response = '';
 
 try {
 	$response = Phresto\Router::route();
