@@ -79,12 +79,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/amarczuk/phresto-lib.git",
-                "reference": "f7f898d03a35dbddc4828b3358d3993d713c281b"
+                "reference": "fa7565d5f2f388b546ede5f7cab6e6c572766123"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amarczuk/phresto-lib/zipball/f7f898d03a35dbddc4828b3358d3993d713c281b",
-                "reference": "f7f898d03a35dbddc4828b3358d3993d713c281b",
+                "url": "https://api.github.com/repos/amarczuk/phresto-lib/zipball/fa7565d5f2f388b546ede5f7cab6e6c572766123",
+                "reference": "fa7565d5f2f388b546ede5f7cab6e6c572766123",
                 "shasum": ""
             },
             "require": {
@@ -105,7 +105,7 @@
                 "MIT"
             ],
             "description": "Simple PHP REST framework",
-            "time": "2017-05-04 10:27:08"
+            "time": "2017-05-10 09:46:01"
         }
     ],
     "packages-dev": [],

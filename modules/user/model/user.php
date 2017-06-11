@@ -4,6 +4,8 @@ namespace Phresto\Modules\Model;
 use Phresto\MySQLModel;
 use Phresto\Model;
 use Phresto\Modules\Model\token;
+use Phresto\Modules\Model\profile;
+use Phresto\Modules\Model\permission;
 
 class user extends MySQLModel {
     const CLASSNAME = __CLASS__;
@@ -13,14 +15,15 @@ class user extends MySQLModel {
     const INDEX = 'id';
     const COLLECTION = 'user';
 
+    protected static $_currentUser = null;
     protected static $_fields = [ 'id' => 'int', 
                                   'email' => 'string', 
-                                  'email_md5' => 'string', 
                                   'password' => 'string', 
                                   'name' => 'string', 
                                   'status' => 'int', 
                                   'created' => 'DateTime', 
-                                  'last_login' => 'DateTime' 
+                                  'last_login' => 'DateTime',
+                                  'profile' => 'int' 
                                 ];
 
     protected static $_defaults = [ 'status' => 1, 'created' => '' ];
@@ -30,11 +33,17 @@ class user extends MySQLModel {
             'model' => 'token',
             'field' => 'user',
             'index' => 'id'
+        ],
+        'profile' => [
+            'type' => 'n:1',
+            'model' => 'profile',
+            'field' => 'id',
+            'index' => 'profile'
         ]
     ];
 
     protected function image_value() {
-        return '//www.gravatar.com/avatar/' . $this->email_md5 . '?d=retro';
+        return '//www.gravatar.com/avatar/' . md5( $this->email ) . '?d=retro';
     }
 
     protected function saveFilter() {
@@ -50,12 +59,53 @@ class user extends MySQLModel {
 
     protected function filterJson( $fields ) {
         if ( isset( $fields['password'] ) ) $fields['password'] = '*';
-        if ( isset( $fields['email_md5'] ) ) $fields['image'] = $this->image;
+        if ( isset( $fields['email'] ) ) $fields['image'] = $this->image;
         return $fields;
+    }
+
+    public function hasAccess( $class, $method ) {
+        $class = substr( $class, mb_strrpos( $class, '\\' ) + 1 );
+        if ( mb_strpos( $method, '_' ) !== false ) {
+            $tmp = explode( '_', $method );
+            $class = $class . '/' . $tmp[0];
+            $method = $tmp[1];
+        }
+        $permission = permission::find( [ 'where' => ['profile' => $this->profile, 'route' => $class, 'method' => $method ] ] );
+    
+        return ( !empty( $permission ) && !empty( $permission[0] ) && $permission[0]->getIndex() && $permission[0]->allow === true );
     }
 
     protected static function passHash( $password ) {
         return md5( md5( $password ) );
+    }
+
+    public static function getCurrent( $headers ) {
+        if ( !empty( static::$_currentUser ) ) {
+            return static::$_currentUser;
+        }
+        
+        $encToken = '';
+        if ( !empty( $headers['Authorization'] ) ) {
+            $encToken = str_replace( 'Bearer ', '', $headers['Authorization'] );
+        } else if ( !empty( $_COOKIE['prsid'] ) ) {
+            $encToken = $_COOKIE['prsid'];
+        }
+
+        $token = token::decrypt( $encToken, $headers['User-Agent'] );
+
+        if ( $token !== false && !empty( $token->getIndex() ) ) {
+            $users = static::findRelated( $token );
+            if ( !empty( $users ) && !empty( $users[0] ) ) {
+                static::$_currentUser = $users[0];
+                return static::$_currentUser;
+            }
+        }
+
+        static::$_currentUser = new user();
+        $profile = profile::find( [ 'where' => [ 'name' => 'visitor' ], 'limit' => 1 ] );
+
+        static::$_currentUser->profile = $profile[0]->getIndex();
+        return static::$_currentUser;
     }
 
     public static function login( $email, $password ) {
@@ -63,15 +113,15 @@ class user extends MySQLModel {
             throw new \Exception( 'Blank password or email' );
         }
 
-        $user = new user( [ 'where' => [ 'email' => $email, 'password' => static::passHash( $password ) ] ] );
-        if ( empty( $user->getIndex() ) ) {
+        $user = static::find( [ 'where' => [ 'email' => $email, 'password' => static::passHash( $password ) ] ] );
+        if ( empty( $user ) || empty( $user[0] ) || empty( $user[0]->getIndex() ) ) {
             throw new \Exception( 'No user found' );
         }
 
-        $user->last_login = new \DateTime();
-        $user->save();
+        $user[0]->last_login = new \DateTime();
+        $user[0]->save();
 
-        return static::getToken( $user );
+        return static::getToken( $user[0] );
     }
 
     public static function socialLogin( $userDetails ) {
@@ -80,7 +130,6 @@ class user extends MySQLModel {
         if ( empty( $user->getIndex() ) ) {
             $user->email = $userDetails['email'];
             $user->name = $userDetails['name'];
-            $user->save();
         }
 
         $user->last_login = new \DateTime();
